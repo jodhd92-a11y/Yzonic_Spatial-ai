@@ -1,0 +1,16 @@
+# sops config — determines which files get encrypted and with which
+# key. Discovered by sops via upward directory search from the file
+# being encrypted, so this MUST live at the repo root (confirmed during
+# setup testing — placing it anywhere else means sops silently can't
+# find it).
+#
+# path_regex matches any .env file anywhere in the repo (services/
+# gateway/.env, services/engine/.env, etc.) — matched against the INPUT
+# filename during encryption, not the .env.enc output name.
+#
+# The age key below is the PUBLIC key — safe to commit, only used for
+# encryption. Generate your own (see infra/secrets/README.md) and
+# replace this placeholder before using this for real.
+creation_rules:
+  - path_regex: /\.env$
+    age: age10jgr6ra3a4070ae80mt6lf7qp52l72hkn8ujhthyhnd92xlueejqxwt933
