@@ -1,38 +1,59 @@
-# See https://help.github.com/articles/ignoring-files/ for more about ignoring files.
 
+!.env.example
+# Build Outputs
+# Debug
 # Dependencies
-node_modules
+# Editors / OS
+# Local env files
+# Misc
+# Node / JS
+# Rust
+# Secrets / local artifacts that should never be committed
+# See https://help.github.com/articles/ignoring-files/ for more about ignoring files.
+# Testing
+# Turbo
+# Vercel
+*.key
+*.log
+*.pem
+*.tsbuildinfo
+.DS_Store
+.astro/
+.env
+.env.*
+.env.development.local
+.env.local
+.env.production.local
+.env.test.local
+.next/
 .pnp
 .pnp.js
-
-# Local env files
-.env
-.env.local
-.env.development.local
-.env.test.local
-.env.production.local
-
-# Testing
-coverage
-
-# Turbo
 .turbo
-
-# Vercel
+.turbo/
 .vercel
-
-# Build Outputs
-.next/
-out/
 build
+cookies.txt
+coverage
 dist
-
-
-# Debug
+dist/
+node_modules
+node_modules/
 npm-debug.log*
+out/
+target/
 yarn-debug.log*
 yarn-error.log*
 
-# Misc
-.DS_Store
-*.pem
+# .env.enc files are DELIBERATELY committable — see infra/secrets/README.md.
+# Without this exception, the .env.* rule above would silently also
+# ignore the encrypted backups, defeating the entire point of having them.
+!.env.enc
+!*/.env.enc
+!*/*/.env.enc
+
+# age private keys — should live in ~/.config/sops/age/, never in-repo,
+# but this is a defensive backstop in case one ever ends up here anyway.
+*age-keys*.txt
+AGE-SECRET-KEY*
+apps.zip
+apps.zip.tmp
