@@ -29,16 +29,30 @@ export const useWindowStore = create<WindowStore>((set) => ({
   nextZIndex: 1,
 
   openWindow: (win) =>
-    set((state) => {
-      if (state.windows.some((w) => w.id === win.id)) return state
+  set((state) => {
+    const existing = state.windows.find((w) => w.id === win.id)
+
+    if (existing) {
+      // Already open — restore if minimized, and always bring to front
       return {
-        windows: [
-          ...state.windows,
-          { ...win, zIndex: state.nextZIndex, minimized: false, maximized: false },
-        ],
+        windows: state.windows.map((w) =>
+          w.id === win.id
+            ? { ...w, minimized: false, zIndex: state.nextZIndex }
+            : w
+        ),
         nextZIndex: state.nextZIndex + 1,
       }
-    }),
+    }
+
+    // Genuinely new window
+    return {
+      windows: [
+        ...state.windows,
+        { ...win, zIndex: state.nextZIndex, minimized: false, maximized: false },
+      ],
+      nextZIndex: state.nextZIndex + 1,
+    }
+  }),
 
   closeWindow: (id) =>
     set((state) => ({

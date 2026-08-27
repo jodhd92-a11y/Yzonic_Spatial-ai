@@ -1,0 +1,301 @@
+@import "tailwindcss";
+@import "./tokens.css";
+
+* {
+  box-sizing: border-box;
+}
+
+html,
+body,
+#app {
+  height: 100%;
+  margin: 0;
+  background: var(--sp-bg-0);
+  color: var(--sp-text);
+  font-family:
+    ui-sans-serif,
+    system-ui,
+    -apple-system,
+    "Inter",
+    "Segoe UI",
+    sans-serif;
+  overscroll-behavior: none;
+}
+
+::selection {
+  background: rgba(var(--sp-primary-rgb), 0.35);
+}
+
+* {
+  scrollbar-width: thin;
+  scrollbar-color: rgba(255, 255, 255, 0.15) transparent;
+}
+*::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
+}
+*::-webkit-scrollbar-thumb {
+  background: rgba(255, 255, 255, 0.12);
+  border-radius: 999px;
+}
+*::-webkit-scrollbar-thumb:hover {
+  background: rgba(255, 255, 255, 0.22);
+}
+
+@keyframes sp-blink {
+  0%,
+  100% {
+    opacity: 1;
+  }
+  50% {
+    opacity: 0;
+  }
+}
+.sp-caret {
+  animation: sp-blink 1s step-start infinite;
+}
+
+@keyframes sp-drift {
+  0% {
+    transform: translate3d(0, 0, 0) scale(1);
+  }
+  50% {
+    transform: translate3d(2%, -3%, 0) scale(1.06);
+  }
+  100% {
+    transform: translate3d(0, 0, 0) scale(1);
+  }
+}
+.sp-aurora {
+  animation: sp-drift 18s ease-in-out infinite;
+}
+
+.sp-prose {
+  line-height: 1.65;
+  font-size: 14.5px;
+}
+.sp-prose > * + * {
+  margin-top: 0.75em;
+}
+.sp-prose p {
+  white-space: pre-wrap;
+}
+.sp-prose strong {
+  color: var(--sp-text);
+  font-weight: 600;
+}
+.sp-prose a {
+  color: var(--sp-primary);
+  text-underline-offset: 2px;
+}
+.sp-prose ul,
+.sp-prose ol {
+  padding-left: 1.4em;
+}
+.sp-prose li + li {
+  margin-top: 0.3em;
+}
+.sp-prose h1,
+.sp-prose h2,
+.sp-prose h3 {
+  font-weight: 600;
+  color: var(--sp-text);
+  line-height: 1.35;
+}
+.sp-prose blockquote {
+  border-left: 2px solid var(--sp-border-hover);
+  padding-left: 0.9em;
+  color: var(--sp-text-dim);
+}
+.sp-prose code:not(pre code) {
+  background: rgba(255, 255, 255, 0.08);
+  padding: 0.15em 0.4em;
+  border-radius: 6px;
+  font-size: 0.87em;
+  font-family: "JetBrains Mono", ui-monospace, monospace;
+}
+.sp-prose table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 0.92em;
+}
+.sp-prose th,
+.sp-prose td {
+  border: 1px solid var(--sp-border);
+  padding: 0.45em 0.7em;
+  text-align: left;
+}
+.sp-prose th {
+  background: rgba(255, 255, 255, 0.04);
+}
+
+/* Code blocks — dark, theme-tinted chrome around highlight.js output */
+.sp-codeblock {
+  position: relative;
+  margin: 0.4em 0;
+  border-radius: 14px;
+  overflow: hidden;
+  border: 1px solid var(--sp-border);
+  background: rgba(0, 0, 0, 0.28);
+}
+:root.light .sp-codeblock {
+  background: rgba(16, 20, 31, 0.04);
+}
+.sp-codeblock::before {
+  content: attr(data-lang);
+  display: block;
+  padding: 0.5em 0.9em;
+  font-size: 10.5px;
+  font-weight: 600;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  color: var(--sp-text-faint);
+  border-bottom: 1px solid var(--sp-border);
+  background: rgba(255, 255, 255, 0.02);
+}
+.sp-codeblock pre {
+  margin: 0;
+  padding: 0.9em 1em;
+  overflow-x: auto;
+}
+.sp-codeblock code {
+  font-family: "JetBrains Mono", ui-monospace, monospace;
+  font-size: 12.5px;
+  line-height: 1.6;
+}
+.hljs {
+  color: var(--sp-text);
+  background: transparent;
+}
+.hljs-comment,
+.hljs-quote {
+  color: var(--sp-text-faint);
+  font-style: italic;
+}
+.hljs-keyword,
+.hljs-selector-tag,
+.hljs-literal,
+.hljs-subst {
+  color: var(--sp-primary);
+}
+.hljs-string,
+.hljs-addition,
+.hljs-attr,
+.hljs-regexp {
+  color: #a3e635;
+}
+.hljs-number,
+.hljs-built_in,
+.hljs-builtin-name {
+  color: #ffb74d;
+}
+.hljs-title,
+.hljs-title.function_,
+.hljs-title.class_ {
+  color: var(--sp-accent);
+}
+.hljs-attribute,
+.hljs-variable,
+.hljs-template-variable {
+  color: #ff9bd2;
+}
+.hljs-symbol,
+.hljs-bullet,
+.hljs-link {
+  color: var(--sp-primary);
+}
+.hljs-deletion {
+  color: #ff6b6b;
+}
+.hljs-emphasis {
+  font-style: italic;
+}
+.hljs-strong {
+  font-weight: 700;
+}
+
+/* Subtle rise-in used by suggestion cards, capability pills, etc. */
+@keyframes sp-pop {
+  0% {
+    transform: scale(0.92);
+    opacity: 0;
+  }
+  100% {
+    transform: scale(1);
+    opacity: 1;
+  }
+}
+.sp-pop {
+  animation: sp-pop 0.22s cubic-bezier(0.22, 0.61, 0.36, 1) both;
+}
+
+/* Gentle shimmer for skeleton / loading affordances */
+@keyframes sp-shimmer {
+  0% {
+    background-position: -200% 0;
+  }
+  100% {
+    background-position: 200% 0;
+  }
+}
+.sp-shimmer {
+  background: linear-gradient(
+    90deg,
+    transparent,
+    rgba(255, 255, 255, 0.06),
+    transparent
+  );
+  background-size: 200% 100%;
+  animation: sp-shimmer 1.6s ease-in-out infinite;
+}
+
+/* Composer button menus (model picker, mic options, the "+" menu) are
+   always a fully solid surface — no backdrop blur / translucency on
+   desktop OR mobile. Desktop used to carry a heavier "liquid glass" blur
+   here; that's removed so these menus look and read identically across
+   breakpoints. */
+.sp-composer-menu {
+  backdrop-filter: none !important;
+  -webkit-backdrop-filter: none !important;
+  background-color: var(--sp-bg-2) !important;
+  opacity: 1 !important;
+}
+
+/* ---------------------------------------------------------------------
+   Mobile pass
+   - Heavy backdrop-filter ("liquid glass") is expensive to composite and
+     reads muddier on small, high-density screens, so it's toned down
+     app-wide below the sm breakpoint instead of patching every panel
+     that uses it individually.
+   - A couple of small-screen safety nets (overflow, tap targets) live
+     here too rather than scattered across components.
+------------------------------------------------------------------------ */
+@media (max-width: 640px) {
+  .backdrop-blur-xl {
+    backdrop-filter: blur(10px) !important;
+    -webkit-backdrop-filter: blur(10px) !important;
+  }
+  .backdrop-blur-md {
+    backdrop-filter: blur(6px) !important;
+    -webkit-backdrop-filter: blur(6px) !important;
+  }
+  .backdrop-blur-sm {
+    backdrop-filter: blur(4px) !important;
+    -webkit-backdrop-filter: blur(4px) !important;
+  }
+
+  /* Aurora glow blobs are pure decoration behind the chat surface — the
+     large blur radius is one of the priciest paints on low-power phones. */
+  .sp-aurora {
+    opacity: 0.16 !important;
+  }
+
+  /* Belt-and-braces: nothing should be able to force horizontal scroll
+     on a narrow viewport regardless of what a component does internally. */
+  html,
+  body,
+  #app {
+    max-width: 100vw;
+    overflow-x: hidden;
+  }
+}

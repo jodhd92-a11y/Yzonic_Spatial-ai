@@ -1,0 +1,62 @@
+.dots {
+  position: fixed;
+  left: 24px;
+  top: 50%;
+  transform: translateY(-50%) translateZ(0);
+  will-change: transform;
+  z-index: 900;
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+}
+@media (max-width: 1024px) {
+  .dots {
+    left: 14px;
+  }
+}
+@media (max-width: 768px) {
+  .dots {
+    display: none;
+  }
+}
+
+.dot {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: rgba(255, 255, 255, 0.2);
+  border: none;
+  transition: all 0.3s var(--ease-spring);
+  position: relative;
+  cursor: none;
+}
+.dot::after {
+  content: attr(data-label);
+  position: absolute;
+  left: calc(100% + 14px);
+  top: 50%;
+  transform: translateY(-50%);
+  background: var(--surface-hi);
+  border: 1px solid var(--border);
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+  padding: 4px 10px;
+  border-radius: 6px;
+  font-size: 10px;
+  font-family: var(--font-mono);
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--text);
+  white-space: nowrap;
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.25s;
+}
+.dot:hover::after {
+  opacity: 1;
+}
+.dot.active {
+  background: var(--primary);
+  transform: scale(1.5);
+  box-shadow: 0 0 12px rgba(var(--primary-rgb), 0.7);
+}

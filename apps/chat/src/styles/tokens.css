@@ -1,0 +1,161 @@
+/* Mirrors apps/explorer/src/app/globals.css --sp-* tokens 1:1 so the
+   embedded chat iframe reads as part of the same product, not a bolted-on
+   widget. If the shell's palette changes, update both files together. */
+:root {
+  --sp-primary: #4fc3f7;
+  --sp-primary-rgb: 79, 195, 247;
+  --sp-accent: #7c4dff;
+  --sp-accent-rgb: 124, 77, 255;
+
+  --sp-bg-0: #05070d;
+  --sp-bg-1: #0a0d16;
+  --sp-bg-2: #10141f;
+  --sp-surface: rgba(255, 255, 255, 0.04);
+  --sp-surface-hover: rgba(255, 255, 255, 0.07);
+  --sp-border: rgba(255, 255, 255, 0.08);
+  --sp-border-hover: rgba(255, 255, 255, 0.14);
+
+  --sp-text: #f5f7fa;
+  --sp-text-dim: rgba(245, 247, 250, 0.62);
+  --sp-text-faint: rgba(245, 247, 250, 0.38);
+
+  --sp-radius-sm: 10px;
+  --sp-radius-md: 16px;
+  --sp-radius-lg: 24px;
+
+  --sp-safe-bottom: env(safe-area-inset-bottom, 0px);
+  --sp-safe-top: env(safe-area-inset-top, 0px);
+}
+
+/* Light theme — swapped in via the `.light` class on <html>, toggled by
+   the theme store. Keep this in sync with the explorer host's own
+   `.light` overrides so the embedded iframe never looks mismatched. */
+:root.light {
+  --sp-bg-0: #f7f8fa;
+  --sp-bg-1: #ffffff;
+  --sp-bg-2: #eef0f4;
+  --sp-surface: rgba(16, 20, 31, 0.035);
+  --sp-surface-hover: rgba(16, 20, 31, 0.06);
+  --sp-border: rgba(16, 20, 31, 0.09);
+  --sp-border-hover: rgba(16, 20, 31, 0.16);
+
+  --sp-text: #12141a;
+  --sp-text-dim: rgba(18, 20, 26, 0.64);
+  --sp-text-faint: rgba(18, 20, 26, 0.42);
+}
+
+:root.light .sp-aurora {
+  opacity: 0.6;
+}
+
+/* Accent themes — same palette + keys as apps/marketing's data-theme
+   system, so switching a theme here reads as the same product identity.
+   Default (no attribute) stays the blue/violet pair set above. */
+:root[data-theme="pink"] {
+  --sp-primary: #ff6b9d;
+  --sp-primary-rgb: 255, 107, 157;
+  --sp-accent: #ff9bd2;
+  --sp-accent-rgb: 255, 155, 210;
+}
+:root[data-theme="yellow"] {
+  --sp-primary: #ffd93d;
+  --sp-primary-rgb: 255, 217, 61;
+  --sp-accent: #fb923c;
+  --sp-accent-rgb: 251, 146, 60;
+}
+:root[data-theme="golden"] {
+  --sp-primary: #ffb74d;
+  --sp-primary-rgb: 255, 183, 77;
+  --sp-accent: #d4a017;
+  --sp-accent-rgb: 212, 160, 23;
+}
+:root[data-theme="green"] {
+  --sp-primary: #66bb6a;
+  --sp-primary-rgb: 102, 187, 106;
+  --sp-accent: #a3e635;
+  --sp-accent-rgb: 163, 230, 53;
+}
+:root[data-theme="violet"] {
+  --sp-primary: #a78bfa;
+  --sp-primary-rgb: 167, 139, 250;
+  --sp-accent: #ec4899;
+  --sp-accent-rgb: 236, 72, 153;
+}
+:root[data-theme="coral"] {
+  --sp-primary: #ff7e5f;
+  --sp-primary-rgb: 255, 126, 95;
+  --sp-accent: #feb47b;
+  --sp-accent-rgb: 254, 180, 123;
+}
+
+/* Smoothly cross-fade accent swaps instead of snapping. */
+@property --sp-primary {
+  syntax: "<color>";
+  inherits: true;
+  initial-value: #4fc3f7;
+}
+@property --sp-accent {
+  syntax: "<color>";
+  inherits: true;
+  initial-value: #7c4dff;
+}
+:root {
+  transition:
+    --sp-primary 0.7s cubic-bezier(0.22, 0.61, 0.36, 1),
+    --sp-accent 0.7s cubic-bezier(0.22, 0.61, 0.36, 1);
+}
+
+/* Customization surface — driven by src/stores/settings.ts via data-*
+   attributes on <html>. Components read these vars instead of hardcoding
+   sizes so "advanced customizable" settings actually take effect app-wide. */
+:root {
+  --sp-font-scale: 1;
+  --sp-msg-gap: 24px;
+  --sp-msg-pad-y: 10px;
+  --sp-chat-max: 760px;
+  --sp-bubble-radius: 20px;
+}
+:root[data-font-size="sm"] {
+  --sp-font-scale: 0.9;
+}
+:root[data-font-size="md"] {
+  --sp-font-scale: 1;
+}
+:root[data-font-size="lg"] {
+  --sp-font-scale: 1.14;
+}
+
+:root[data-density="compact"] {
+  --sp-msg-gap: 14px;
+  --sp-msg-pad-y: 6px;
+}
+:root[data-density="comfortable"] {
+  --sp-msg-gap: 24px;
+  --sp-msg-pad-y: 10px;
+}
+:root[data-density="spacious"] {
+  --sp-msg-gap: 34px;
+  --sp-msg-pad-y: 16px;
+}
+
+:root[data-chat-width="narrow"] {
+  --sp-chat-max: 620px;
+}
+:root[data-chat-width="default"] {
+  --sp-chat-max: 760px;
+}
+:root[data-chat-width="wide"] {
+  --sp-chat-max: 960px;
+}
+
+:root[data-bubble="flat"] {
+  --sp-bubble-radius: 8px;
+}
+
+.sp-reduce-motion *,
+.sp-reduce-motion *::before,
+.sp-reduce-motion *::after {
+  animation-duration: 0.001ms !important;
+  animation-iteration-count: 1 !important;
+  transition-duration: 0.001ms !important;
+}

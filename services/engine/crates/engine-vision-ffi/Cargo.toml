@@ -1,0 +1,13 @@
+[package]
+name = "engine-vision-ffi"
+version.workspace = true
+edition.workspace = true
+license.workspace = true
+publish.workspace = true
+
+# NOT a workspace member yet (see root Cargo.toml comment) — kept here,
+# unbuilt, so its intended location in the tree is visible from day one
+# without paying any build cost for a C++ FFI boundary nothing calls.
+# Per blueprint section 6 "What NOT to do": don't build this before a
+# concrete server-side inference need exists (phase 6).
+[dependencies]

@@ -1,0 +1,123 @@
+.features {
+  padding: 140px 0 120px;
+}
+
+.grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 1px;
+  margin-top: 72px;
+  background: var(--border);
+  border: 1px solid var(--border);
+  border-radius: 28px;
+  overflow: hidden;
+}
+@media (max-width: 900px) {
+  .grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+@media (max-width: 600px) {
+  .grid {
+    grid-template-columns: 1fr;
+  }
+}
+
+.card {
+  background: var(--bg-1);
+  padding: 44px 36px 40px;
+  position: relative;
+  overflow: hidden;
+  transition:
+    background 0.4s var(--ease-out),
+    transform 0.4s var(--ease-out);
+}
+.card:hover {
+  background: var(--bg-2);
+  transform: translateY(-2px);
+}
+.card::after {
+  content: "";
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  height: 2px;
+  background: linear-gradient(90deg, transparent, var(--primary), transparent);
+  opacity: 0;
+  transition: opacity 0.4s;
+}
+.card:hover::after {
+  opacity: 1;
+}
+.card::before {
+  content: "";
+  position: absolute;
+  top: -50%;
+  left: -50%;
+  width: 200%;
+  height: 200%;
+  background: radial-gradient(
+    circle at center,
+    rgba(var(--primary-rgb), 0.08),
+    transparent 50%
+  );
+  opacity: 0;
+  transition: opacity 0.5s;
+  pointer-events: none;
+}
+.card:hover::before {
+  opacity: 1;
+}
+
+.icon {
+  width: 52px;
+  height: 52px;
+  border-radius: 16px;
+  background: var(--primary-soft);
+  border: 1px solid rgba(var(--primary-rgb), 0.3);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-bottom: 26px;
+  position: relative;
+  transition:
+    transform 0.4s var(--ease-spring),
+    background 0.4s;
+}
+.card:hover .icon {
+  transform: rotate(-8deg) scale(1.1);
+  background: rgba(var(--primary-rgb), 0.18);
+}
+.icon svg {
+  width: 24px;
+  height: 24px;
+  stroke: var(--primary);
+  fill: none;
+  stroke-width: 1.6;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+
+.title {
+  font-size: 19px;
+  font-weight: 700;
+  letter-spacing: -0.02em;
+  margin-bottom: 12px;
+  color: var(--text);
+}
+.desc {
+  font-size: 14.5px;
+  font-weight: 300;
+  color: var(--text-dim);
+  line-height: 1.65;
+}
+.num {
+  position: absolute;
+  top: 24px;
+  right: 28px;
+  font-family: var(--font-mono);
+  font-size: 11px;
+  color: var(--text-faint);
+  letter-spacing: 0.1em;
+}

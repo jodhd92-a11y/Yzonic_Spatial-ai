@@ -1,0 +1,114 @@
+/* The real text is in the DOM from the very first paint (this is what
+   the LCP element actually is on this page) — the "typing" look is
+   purely a clip-path wipe running on the compositor, quantized into
+   as many discrete steps as the string has characters so it still
+   reads as a per-character reveal. No JS runs during the animation
+   itself; the old version drove this with ~30+ sequential setState
+   calls over ~1.5s, which meant the H1 painted empty and delayed (and
+   distorted) the page's actual LCP measurement. */
+.wrap {
+  position: relative;
+  display: inline-block;
+}
+
+.text {
+  display: inline-block;
+  clip-path: inset(0 100% 0 0);
+  animation: reveal var(--tw-duration, 600ms)
+    steps(var(--tw-steps, 1), jump-end) var(--tw-delay, 0ms) both;
+}
+
+/* Soft glowing duplicate, one layer behind the crisp text, same
+   reveal timing — the "igniting" trail. Positioned to overlay the
+   crisp copy exactly; the crisp copy still defines the box's real
+   size since it's the one in normal flow. */
+.textGlow {
+  position: absolute;
+  inset: 0;
+  display: inline-block;
+  color: var(--primary);
+  filter: blur(9px);
+  opacity: 0.5;
+  clip-path: inset(0 100% 0 0);
+  animation: reveal var(--tw-duration, 600ms)
+    steps(var(--tw-steps, 1), jump-end) var(--tw-delay, 0ms) both;
+  pointer-events: none;
+}
+
+@keyframes reveal {
+  to {
+    clip-path: inset(0 0 0 0);
+  }
+}
+
+/* The caret used to be laid out after the full string and simply
+   fade in/out in place — meaning it sat at the finished-headline
+   position for the entire typing animation instead of riding along
+   with the writing edge. It's absolutely positioned now and its
+   `left` is driven by the same steps()/duration/delay as the text
+   reveal (1ch per character, matched to --tw-steps), so it travels
+   with the last revealed character exactly like a person actually
+   typing this for the first time, then settles at the end to blink.
+   Still only `left` + `opacity` — no layout-triggering properties,
+   same compositor-only budget as before. */
+.cursor {
+  position: absolute;
+  top: 0.06em;
+  left: 0;
+  width: 0.08em;
+  height: 0.86em;
+  border-radius: 1px;
+  background: currentColor;
+  box-shadow:
+    0 0 8px currentColor,
+    0 0 18px currentColor;
+  opacity: 0;
+  animation:
+    cursorShow 1ms steps(1) var(--tw-delay, 0ms) forwards,
+    caretTravel var(--tw-duration, 600ms) steps(var(--tw-steps, 1), jump-end)
+      var(--tw-delay, 0ms) both,
+    typewriterBlink 1.15s ease-in-out var(--tw-delay, 0ms) infinite,
+    cursorHide 0.5s ease var(--tw-hide, 0ms) forwards;
+}
+
+@keyframes caretTravel {
+  from {
+    left: 0;
+  }
+  to {
+    left: calc(var(--tw-steps, 1) * 1ch);
+  }
+}
+
+@keyframes cursorShow {
+  to {
+    opacity: 1;
+  }
+}
+@keyframes typewriterBlink {
+  0%,
+  100% {
+    opacity: 1;
+  }
+  50% {
+    opacity: 0.18;
+  }
+}
+@keyframes cursorHide {
+  to {
+    opacity: 0;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .text {
+    animation: none;
+    clip-path: none;
+  }
+  .textGlow {
+    display: none;
+  }
+  .cursor {
+    display: none;
+  }
+}

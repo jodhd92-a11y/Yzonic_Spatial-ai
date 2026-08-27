@@ -1,0 +1,350 @@
+.navbar {
+  position: fixed;
+  top: 14px;
+  left: 50%;
+  transform: translateX(-50%) translateZ(0);
+  will-change: transform;
+  z-index: 1000;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+  width: min(1040px, calc(100% - 32px));
+  padding: 0 10px 0 22px;
+  height: 56px;
+  background: rgba(20, 22, 30, 0.55);
+  backdrop-filter: blur(28px) saturate(1.8);
+  -webkit-backdrop-filter: blur(28px) saturate(1.8);
+  border: 1px solid rgba(255, 255, 255, 0.14);
+  border-radius: 999px;
+  box-shadow:
+    0 1px 0 rgba(255, 255, 255, 0.16) inset,
+    0 18px 44px rgba(0, 0, 0, 0.38),
+    0 0 0 1px rgba(var(--primary-rgb), 0.05);
+  transition:
+    background 0.6s var(--ease-out),
+    box-shadow 0.6s var(--ease-out),
+    border-color 0.6s var(--ease-out),
+    width 1.6s cubic-bezier(0.65, 0, 0.35, 1),
+    height 1.6s cubic-bezier(0.65, 0, 0.35, 1),
+    padding 1.6s cubic-bezier(0.65, 0, 0.35, 1),
+    border-radius 1.6s cubic-bezier(0.65, 0, 0.35, 1),
+    top 0.4s var(--ease-out);
+}
+.navbar::before {
+  content: "";
+  position: absolute;
+  inset: -1px;
+  border-radius: inherit;
+  padding: 1px;
+  /* Static linear gradient border — same soft two-tone accent as
+     before, but fixed in place. This used to be a conic-gradient
+     spun via `animation: halo-spin ... infinite`, which read as a
+     shadow endlessly rotating behind the bar. Removed entirely
+     rather than just slowed down: an always-on infinite animation
+     sitting behind primary navigation is a distraction (and a
+     continuous compositor cost) no matter the speed. */
+  background: linear-gradient(
+    135deg,
+    rgba(var(--primary-rgb), 0.5),
+    rgba(var(--accent-rgb), 0.4),
+    rgba(var(--primary-rgb), 0.12)
+  );
+  -webkit-mask:
+    linear-gradient(#000 0 0) content-box,
+    linear-gradient(#000 0 0);
+  -webkit-mask-composite: xor;
+  mask-composite: exclude;
+  opacity: 0.55;
+  pointer-events: none;
+}
+.navbar.scrolled {
+  width: min(880px, calc(100% - 48px));
+  top: 10px;
+  height: 52px;
+  background: rgba(14, 16, 22, 0.72);
+  box-shadow:
+    0 1px 0 rgba(255, 255, 255, 0.18) inset,
+    0 22px 50px rgba(0, 0, 0, 0.5),
+    0 0 0 1px rgba(var(--primary-rgb), 0.1);
+}
+
+/* Collapsed: scrolling down shrinks the whole pill down to just the
+   logo badge; scrolling back up (see NavWithLoader's scroll handler)
+   reverses it. Reuses the same transition list already declared on
+   `.navbar` above, so width/padding/border-radius all ease together.
+   An explicit pixel width here (not `auto`) matters: CSS transitions
+   can't interpolate to/from `auto` — there's no in-between pixel
+   value for the browser to animate through — so collapsing looked
+   smooth (shrinking toward a moving target reads as fine) while
+   expanding back out from `auto` snapped instantly instead of
+   growing. A concrete end value fixes both directions symmetrically. */
+.navbar.collapsed {
+  width: 52px;
+  padding: 0 6px;
+  gap: 0;
+}
+.navbar.collapsed .navLogo {
+  gap: 0;
+}
+
+.navCenter,
+.navRight {
+  transition:
+    max-width 1.6s cubic-bezier(0.65, 0, 0.35, 1),
+    opacity 1.1s var(--ease-out),
+    margin 1.6s cubic-bezier(0.65, 0, 0.35, 1);
+}
+.navbar.collapsed .navCenter,
+.navbar.collapsed .navRight {
+  max-width: 0;
+  opacity: 0;
+  margin: 0;
+  pointer-events: none;
+}
+
+.navLogo span {
+  transition:
+    max-width 1.3s cubic-bezier(0.65, 0, 0.35, 1),
+    opacity 0.95s var(--ease-out),
+    margin-left 1.3s cubic-bezier(0.65, 0, 0.35, 1);
+}
+.navbar.collapsed .navLogo span {
+  max-width: 0;
+  opacity: 0;
+  margin-left: 0;
+}
+
+.navCenter,
+.navRight {
+  overflow: hidden;
+  max-width: 500px;
+}
+.navLogo span {
+  display: inline-block;
+  overflow: hidden;
+  white-space: nowrap;
+  max-width: 120px;
+}
+
+.navLogo {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  font-weight: 700;
+  font-size: 16px;
+  letter-spacing: -0.3px;
+  color: var(--text);
+}
+.logoBadge {
+  width: 38px;
+  height: 38px;
+  border-radius: 12px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: linear-gradient(
+    150deg,
+    rgba(var(--primary-rgb), 0.38),
+    rgba(var(--accent-rgb), 0.26)
+  );
+  border: 1.5px solid rgba(var(--primary-rgb), 0.6);
+  box-shadow:
+    0 1px 0 rgba(255, 255, 255, 0.28) inset,
+    0 2px 10px rgba(0, 0, 0, 0.3),
+    0 0 18px rgba(var(--primary-rgb), 0.3);
+  transition:
+    border-radius 0.5s var(--ease-spring),
+    box-shadow 0.4s var(--ease-out),
+    background 0.5s var(--ease-out),
+    transform 0.5s var(--ease-spring);
+}
+.navLogo:hover .logoBadge {
+  border-radius: 18px;
+  transform: scale(1.06);
+  box-shadow:
+    0 1px 0 rgba(255, 255, 255, 0.24) inset,
+    0 4px 16px rgba(0, 0, 0, 0.3),
+    0 0 26px rgba(var(--primary-rgb), 0.32);
+}
+.navLogo svg {
+  width: 24px;
+  height: 24px;
+  shape-rendering: geometricPrecision;
+  transition: transform 0.6s var(--ease-spring);
+  transform-origin: 50% 50%;
+  will-change: transform;
+  backface-visibility: hidden;
+}
+.navLogo:hover svg {
+  transform: rotate(180deg) scale(1.1);
+}
+.logoRing {
+  stroke: var(--primary);
+  transition: stroke 0.6s;
+  vector-effect: non-scaling-stroke;
+}
+.logoStar {
+  fill: var(--primary);
+  transition: fill 0.6s;
+  transform-origin: 14px 14px;
+}
+.logoStarGlow {
+  fill: var(--primary);
+  opacity: 0.7;
+  filter: blur(3px);
+  animation: star-glow 2.4s ease-in-out infinite;
+  transform-origin: 14px 14px;
+  pointer-events: none;
+  will-change: opacity, transform;
+}
+@keyframes star-glow {
+  0%,
+  100% {
+    opacity: 0.45;
+    transform: scale(0.92);
+  }
+  50% {
+    opacity: 0.8;
+    transform: scale(1.12);
+  }
+}
+.navLogo span {
+  color: var(--white);
+  font-weight: 800;
+}
+@media (prefers-reduced-motion: reduce) {
+  .logoStarGlow {
+    animation: none;
+  }
+}
+
+.navCenter {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  list-style: none;
+}
+.navCenter li a {
+  display: block;
+  padding: 8px 16px;
+  font-size: 13.5px;
+  font-weight: 500;
+  color: var(--text-dim);
+  border-radius: 24px;
+  transition: all 0.25s var(--ease-out);
+  letter-spacing: -0.1px;
+}
+.navCenter li a:hover {
+  background: var(--surface-hi);
+  color: var(--text);
+}
+
+.navRight {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.sidebarTrigger {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 8px 14px 8px 10px;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 24px;
+  transition: all 0.25s var(--ease-out);
+  font-size: 13px;
+  font-weight: 500;
+  color: var(--text-dim);
+}
+.sidebarTrigger:hover {
+  background: var(--surface-hi);
+  color: var(--text);
+  border-color: var(--border-hi);
+}
+.stDots {
+  display: flex;
+  flex-direction: column;
+  gap: 3px;
+}
+.stDots span {
+  width: 14px;
+  height: 1.5px;
+  background: currentColor;
+  border-radius: 2px;
+}
+@media (max-width: 900px) {
+  .sidebarTrigger {
+    display: none;
+  }
+}
+
+.navCta {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 9px 22px;
+  background: linear-gradient(135deg, var(--primary), var(--accent));
+  color: #05070d;
+  font-weight: 700;
+  font-size: 13.5px;
+  border-radius: 24px;
+  transition:
+    transform 0.25s var(--ease-spring),
+    box-shadow 0.25s,
+    background 0.9s var(--ease-out);
+  box-shadow: 0 4px 20px rgba(var(--primary-rgb), 0.3);
+  letter-spacing: -0.2px;
+}
+.navCta:hover {
+  transform: translateY(-2px) scale(1.04);
+  box-shadow: 0 8px 30px rgba(var(--primary-rgb), 0.5);
+}
+.navCta:active {
+  transform: scale(0.96);
+}
+
+.menuToggle {
+  display: none;
+  width: 42px;
+  height: 42px;
+  border-radius: 12px;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  align-items: center;
+  justify-content: center;
+  position: relative;
+}
+.menuToggle span {
+  position: absolute;
+  width: 18px;
+  height: 1.5px;
+  background: var(--text);
+  border-radius: 2px;
+  transition: all 0.35s var(--ease-spring);
+}
+.menuToggle span:nth-child(1) {
+  transform: translateY(-5px);
+}
+.menuToggle span:nth-child(2) {
+  transform: translateY(5px);
+  width: 12px;
+}
+.menuToggle.open span:nth-child(1) {
+  transform: rotate(45deg);
+}
+.menuToggle.open span:nth-child(2) {
+  transform: rotate(-45deg);
+  width: 18px;
+}
+
+@media (max-width: 900px) {
+  .navCenter {
+    display: none;
+  }
+  .menuToggle {
+    display: flex;
+  }
+}

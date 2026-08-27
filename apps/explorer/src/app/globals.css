@@ -1,0 +1,704 @@
+@import "tailwindcss";
+@import "tw-animate-css";
+@import "shadcn/tailwind.css";
+
+@custom-variant dark (&:is(.dark *));
+
+/* Registering this as a real <length> lets the browser interpolate it
+   smoothly (via a plain CSS transition) wherever it's referenced —
+   the sidebar's width, the topbar's left offset, and the main content's
+   padding — instead of the value just snapping instantly. */
+@property --sp-sidebar-w {
+  syntax: "<length>";
+  inherits: true;
+  initial-value: 280px;
+}
+
+@theme inline {
+  --color-background: var(--background);
+  --color-foreground: var(--foreground);
+  --font-sans: var(--font-geist-sans);
+  --font-mono: var(--font-geist-mono);
+  --font-heading: var(--font-display);
+  --color-sidebar-ring: var(--sidebar-ring);
+  --color-sidebar-border: var(--sidebar-border);
+  --color-sidebar-accent-foreground: var(--sidebar-accent-foreground);
+  --color-sidebar-accent: var(--sidebar-accent);
+  --color-sidebar-primary-foreground: var(--sidebar-primary-foreground);
+  --color-sidebar-primary: var(--sidebar-primary);
+  --color-sidebar-foreground: var(--sidebar-foreground);
+  --color-sidebar: var(--sidebar);
+  --color-chart-5: var(--chart-5);
+  --color-chart-4: var(--chart-4);
+  --color-chart-3: var(--chart-3);
+  --color-chart-2: var(--chart-2);
+  --color-chart-1: var(--chart-1);
+  --color-ring: var(--ring);
+  --color-input: var(--input);
+  --color-border: var(--border);
+  --color-destructive: var(--destructive);
+  --color-accent-foreground: var(--accent-foreground);
+  --color-accent: var(--accent);
+  --color-muted-foreground: var(--muted-foreground);
+  --color-muted: var(--muted);
+  --color-secondary-foreground: var(--secondary-foreground);
+  --color-secondary: var(--secondary);
+  --color-primary-foreground: var(--primary-foreground);
+  --color-primary: var(--primary);
+  --color-popover-foreground: var(--popover-foreground);
+  --color-popover: var(--popover);
+  --color-card-foreground: var(--card-foreground);
+  --color-card: var(--card);
+  --radius-sm: calc(var(--radius) * 0.6);
+  --radius-md: calc(var(--radius) * 0.8);
+  --radius-lg: var(--radius);
+  --radius-xl: calc(var(--radius) * 1.4);
+  --radius-2xl: calc(var(--radius) * 1.8);
+  --radius-3xl: calc(var(--radius) * 2.2);
+  --radius-4xl: calc(var(--radius) * 2.6);
+}
+
+:root {
+  --background: oklch(1 0 0);
+  --foreground: oklch(0.145 0 0);
+  --card: oklch(1 0 0);
+  --card-foreground: oklch(0.145 0 0);
+  --popover: oklch(1 0 0);
+  --popover-foreground: oklch(0.145 0 0);
+  --primary: oklch(0.205 0 0);
+  --primary-foreground: oklch(0.985 0 0);
+  --secondary: oklch(0.97 0 0);
+  --secondary-foreground: oklch(0.205 0 0);
+  --muted: oklch(0.97 0 0);
+  --muted-foreground: oklch(0.556 0 0);
+  --accent: oklch(0.97 0 0);
+  --accent-foreground: oklch(0.205 0 0);
+  --destructive: oklch(0.577 0.245 27.325);
+  --border: oklch(0.922 0 0);
+  --input: oklch(0.922 0 0);
+  --ring: oklch(0.708 0 0);
+  --chart-1: oklch(0.87 0 0);
+  --chart-2: oklch(0.556 0 0);
+  --chart-3: oklch(0.439 0 0);
+  --chart-4: oklch(0.371 0 0);
+  --chart-5: oklch(0.269 0 0);
+  --radius: 0.625rem;
+  --sidebar: oklch(0.985 0 0);
+  --sidebar-foreground: oklch(0.145 0 0);
+  --sidebar-primary: oklch(0.205 0 0);
+  --sidebar-primary-foreground: oklch(0.985 0 0);
+  --sidebar-accent: oklch(0.97 0 0);
+  --sidebar-accent-foreground: oklch(0.205 0 0);
+  --sidebar-border: oklch(0.922 0 0);
+  --sidebar-ring: oklch(0.708 0 0);
+}
+
+.dark {
+  --background: oklch(0.145 0 0);
+  --foreground: oklch(0.985 0 0);
+  --card: oklch(0.205 0 0);
+  --card-foreground: oklch(0.985 0 0);
+  --popover: oklch(0.205 0 0);
+  --popover-foreground: oklch(0.985 0 0);
+  --primary: oklch(0.922 0 0);
+  --primary-foreground: oklch(0.205 0 0);
+  --secondary: oklch(0.269 0 0);
+  --secondary-foreground: oklch(0.985 0 0);
+  --muted: oklch(0.269 0 0);
+  --muted-foreground: oklch(0.708 0 0);
+  --accent: oklch(0.269 0 0);
+  --accent-foreground: oklch(0.985 0 0);
+  --destructive: oklch(0.704 0.191 22.216);
+  --border: oklch(1 0 0 / 10%);
+  --input: oklch(1 0 0 / 15%);
+  --ring: oklch(0.556 0 0);
+  --chart-1: oklch(0.87 0 0);
+  --chart-2: oklch(0.556 0 0);
+  --chart-3: oklch(0.439 0 0);
+  --chart-4: oklch(0.371 0 0);
+  --chart-5: oklch(0.269 0 0);
+  --sidebar: oklch(0.205 0 0);
+  --sidebar-foreground: oklch(0.985 0 0);
+  --sidebar-primary: oklch(0.488 0.243 264.376);
+  --sidebar-primary-foreground: oklch(0.985 0 0);
+  --sidebar-accent: oklch(0.269 0 0);
+  --sidebar-accent-foreground: oklch(0.985 0 0);
+  --sidebar-border: oklch(1 0 0 / 10%);
+  --sidebar-ring: oklch(0.556 0 0);
+}
+
+@layer base {
+  * {
+    @apply border-border outline-ring/50;
+  }
+  body {
+    @apply bg-background text-foreground;
+  }
+  html {
+    @apply font-sans;
+  }
+}
+/* Spatial AI Explorer — product app theme
+   "Signal" system: one precise accent hue at two depths (not a competing
+   dual cyan/violet gradient), neutral graphite surfaces (not blue-black),
+   tighter data-forward radii, and real status colors — enterprise
+   telemetry tool, not a consumer AI-toy skin. */
+:root {
+  --sp-primary: #4c7fff;
+  --sp-primary-rgb: 76, 127, 255;
+  --sp-accent: #2f5fe0;
+  --sp-accent-rgb: 47, 95, 224;
+
+  --sp-success: #34d399;
+  --sp-success-rgb: 52, 211, 153;
+  --sp-warning: #f5a623;
+  --sp-warning-rgb: 245, 166, 35;
+  --sp-danger: #f0554c;
+  --sp-danger-rgb: 240, 85, 76;
+
+  --sp-bg-0: #09090b;
+  --sp-bg-1: #0e0f11;
+  --sp-bg-2: #161719;
+  --sp-surface: rgba(255, 255, 255, 0.045);
+  --sp-surface-hover: rgba(255, 255, 255, 0.075);
+  --sp-border: rgba(255, 255, 255, 0.09);
+  --sp-border-hover: rgba(255, 255, 255, 0.16);
+
+  --sp-text: #f2f3f5;
+  --sp-text-dim: rgba(242, 243, 245, 0.6);
+  --sp-text-faint: rgba(242, 243, 245, 0.36);
+
+  --sp-sidebar-w: 280px;
+  --sp-bottomnav-h: 64px;
+  --sp-topbar-h: 60px;
+  --sp-safe-bottom: env(safe-area-inset-bottom, 0px);
+  --sp-safe-top: env(safe-area-inset-top, 0px);
+
+  --sp-radius-sm: 8px;
+  --sp-radius-md: 12px;
+  --sp-radius-lg: 18px;
+
+  /* shadcn/ui sidebar primitive tokens, remapped onto the sp-* brand
+     palette above. Declared after :root's defaults and .dark's so this
+     wins by default; the `.light` block further below overrides these
+     again when the Theme setting is set to Light. */
+  --sidebar: var(--sp-bg-1);
+  --sidebar-foreground: var(--sp-text);
+  --sidebar-border: var(--sp-border);
+  --sidebar-accent: var(--sp-surface-hover);
+  --sidebar-accent-foreground: var(--sp-text);
+  --sidebar-primary: var(--sp-primary);
+  --sidebar-primary-foreground: var(--sp-bg-0);
+  --sidebar-ring: var(--sp-primary);
+}
+
+/* Light variant of the sp-* brand tokens above, applied via a `.light`
+   class on <html> (see components/shell/ThemeEffect.tsx), so the General
+   settings tab's Theme control is a real, working preference rather than
+   a decorative toggle. Mirrors the same surfaces/hierarchy as the dark
+   "Signal" palette, just inverted. */
+.light {
+  --sp-bg-0: #f5f6f8;
+  --sp-bg-1: #ffffff;
+  --sp-bg-2: #eef0f3;
+  --sp-surface: rgba(9, 9, 11, 0.035);
+  --sp-surface-hover: rgba(9, 9, 11, 0.06);
+  --sp-border: rgba(9, 9, 11, 0.1);
+  --sp-border-hover: rgba(9, 9, 11, 0.18);
+
+  --sp-text: #101114;
+  --sp-text-dim: rgba(16, 17, 20, 0.64);
+  --sp-text-faint: rgba(16, 17, 20, 0.4);
+
+  --sidebar: var(--sp-bg-1);
+  --sidebar-foreground: var(--sp-text);
+  --sidebar-border: var(--sp-border);
+  --sidebar-accent: var(--sp-surface-hover);
+  --sidebar-accent-foreground: var(--sp-text);
+  --sidebar-primary: var(--sp-primary);
+  --sidebar-primary-foreground: #ffffff;
+  --sidebar-ring: var(--sp-primary);
+}
+
+/* ─────────────────────────────────────────────────────────────────────────
+   Auth surface — echoes the marketing site's default palette (near-black,
+   cyan→violet gradient, glass panels) so the sign-in experience reads as a
+   continuation of the marketing site rather than a different product that
+   happens to sit between it and the app.
+   ───────────────────────────────────────────────────────────────────────── */
+.auth-scope {
+  --auth-bg-0: #05070d;
+  --auth-bg-1: #080b14;
+  --auth-primary: #4fc3f7;
+  --auth-primary-deep: #29b6f6;
+  --auth-accent: #7c4dff;
+  --auth-glass-bg: rgba(255, 255, 255, 0.045);
+  --auth-glass-border: rgba(255, 255, 255, 0.1);
+  --auth-glass-border-hi: rgba(255, 255, 255, 0.18);
+  --auth-text: #f5f7fa;
+  --auth-text-dim: rgba(245, 247, 250, 0.6);
+  --auth-text-faint: rgba(245, 247, 250, 0.36);
+  --auth-danger: #ff6b6b;
+  --auth-success: #4fd18b;
+  --auth-ease: cubic-bezier(0.22, 0.61, 0.36, 1);
+}
+
+/* ─────────────────────────────────────────────────────────────────────────
+   Camera engine motion — pure CSS keyframes (compositor thread, not JS),
+   so these never contend with a real-time detection loop.
+   ───────────────────────────────────────────────────────────────────────── */
+@keyframes sp-scanline {
+  0% {
+    transform: translateY(0);
+    opacity: 0;
+  }
+  8% {
+    opacity: 1;
+  }
+  92% {
+    opacity: 1;
+  }
+  100% {
+    transform: translateY(var(--sp-scan-h, 260px));
+    opacity: 0;
+  }
+}
+
+@keyframes sp-live-pulse {
+  0%,
+  100% {
+    opacity: 1;
+  }
+  50% {
+    opacity: 0.35;
+  }
+}
+
+@keyframes sp-ping-ring {
+  0% {
+    transform: scale(0.3);
+    opacity: 0.65;
+  }
+  70% {
+    opacity: 0.12;
+  }
+  100% {
+    transform: scale(1.7);
+    opacity: 0;
+  }
+}
+
+@keyframes sp-bracket-pulse {
+  0%,
+  100% {
+    filter: drop-shadow(0 0 0 rgba(var(--sp-primary-rgb), 0));
+  }
+  50% {
+    filter: drop-shadow(0 0 6px rgba(var(--sp-primary-rgb), 0.55));
+  }
+}
+
+@keyframes sp-grid-fade {
+  0%,
+  100% {
+    opacity: 0.12;
+  }
+  50% {
+    opacity: 0.3;
+  }
+}
+
+@keyframes sp-rotate-ring {
+  from {
+    transform: rotate(0deg);
+  }
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+/* Per-step fill for the onboarding tour's auto-advance progress track —
+   an @keyframes animation (not a transition) specifically so its
+   play state can be paused via `animation-play-state` while the person
+   is hovering the tour card reading it. */
+@keyframes sp-tour-fill {
+  from {
+    width: 0%;
+  }
+  to {
+    width: 100%;
+  }
+}
+
+/* Hides scrollbars while keeping the element scrollable — used for the
+   TemplatePicker's horizontal category-pill row so it can overflow on
+   narrow screens without an ugly scrollbar interrupting the pill row. */
+.no-scrollbar {
+  scrollbar-width: none;
+  -ms-overflow-style: none;
+}
+.no-scrollbar::-webkit-scrollbar {
+  display: none;
+}
+
+/* ─────────────────────────────────────────────────────────────────────────
+   Clinical Studio — enterprise "liquid glass" surface system for the
+   photo-customization workspace (PhotoCustomizePanel + capture preview).
+   Distinct from consumer glass: higher-contrast borders, a cool specular
+   sheen instead of a warm bloom, and status-driven accent glows (QC,
+   signature/lock, AI) layered on top of the existing --sp-* tokens so the
+   rest of the shell is untouched.
+   ───────────────────────────────────────────────────────────────────────── */
+:root {
+  --lg-tint: 255, 255, 255;
+  --lg-bg: rgba(20, 22, 26, 0.52);
+  --lg-bg-strong: rgba(14, 16, 19, 0.72);
+  --lg-border: rgba(255, 255, 255, 0.14);
+  --lg-border-hi: rgba(255, 255, 255, 0.3);
+  --lg-specular: rgba(255, 255, 255, 0.55);
+  --lg-shadow:
+    0 20px 60px rgba(0, 0, 0, 0.5), inset 0 1px 0 rgba(255, 255, 255, 0.08);
+
+  --qc-good: #34d399;
+  --qc-warn: #f5a623;
+  --qc-bad: #f0554c;
+  --sig-color: #a78bfa;
+  --sig-rgb: 167, 139, 250;
+  --ai-color: #22d3ee;
+  --ai-rgb: 34, 211, 238;
+}
+.light {
+  --lg-bg: rgba(255, 255, 255, 0.55);
+  --lg-bg-strong: rgba(255, 255, 255, 0.78);
+  --lg-border: rgba(9, 9, 11, 0.12);
+  --lg-border-hi: rgba(9, 9, 11, 0.22);
+  --lg-specular: rgba(255, 255, 255, 0.85);
+  --lg-shadow:
+    0 20px 50px rgba(20, 22, 30, 0.14), inset 0 1px 0 rgba(255, 255, 255, 0.6);
+}
+
+.glass-panel {
+  background: var(--lg-bg);
+  backdrop-filter: blur(28px) saturate(1.5);
+  -webkit-backdrop-filter: blur(28px) saturate(1.5);
+  border: 1px solid var(--lg-border);
+  box-shadow: var(--lg-shadow);
+  position: relative;
+}
+.glass-panel::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  border-radius: inherit;
+  pointer-events: none;
+  background: linear-gradient(
+    135deg,
+    var(--lg-specular) 0%,
+    transparent 22%,
+    transparent 78%,
+    rgba(0, 0, 0, 0.06) 100%
+  );
+  opacity: 0.16;
+  mix-blend-mode: overlay;
+}
+
+.glass-panel-strong {
+  background: var(--lg-bg-strong);
+  backdrop-filter: blur(36px) saturate(1.6);
+  -webkit-backdrop-filter: blur(36px) saturate(1.6);
+  border: 1px solid var(--lg-border-hi);
+  box-shadow:
+    var(--lg-shadow),
+    inset 0 1px 0 rgba(255, 255, 255, 0.22);
+  position: relative;
+}
+.glass-panel-strong::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  border-radius: inherit;
+  pointer-events: none;
+  background: linear-gradient(
+    135deg,
+    var(--lg-specular) 0%,
+    transparent 26%,
+    transparent 74%,
+    rgba(0, 0, 0, 0.08) 100%
+  );
+  opacity: 0.26;
+  mix-blend-mode: overlay;
+}
+.glass-panel-strong::after {
+  content: "";
+  position: absolute;
+  inset: 0 0 auto 0;
+  height: 45%;
+  border-radius: inherit;
+  pointer-events: none;
+  background: linear-gradient(180deg, var(--lg-specular) 0%, transparent 100%);
+  opacity: 0.2;
+}
+
+/* Darker glass variant for the guided tour's tooltip card only — layered
+   on top of .glass-panel-strong (blur/border/shadow/specular pseudo-
+   elements stay shared), overriding just the background so the card
+   reads clearly against busy live camera footage without affecting the
+   detection card or Studio panel, which use the plain strong variant. */
+.tour-card-glass {
+  background: rgba(8, 9, 11, 0.86);
+}
+
+.glass-rail {
+  background: var(--lg-bg);
+  backdrop-filter: blur(22px) saturate(1.4);
+  -webkit-backdrop-filter: blur(22px) saturate(1.4);
+  border: 1px solid var(--lg-border);
+}
+
+.glass-btn {
+  background: rgba(var(--lg-tint), 0.06);
+  backdrop-filter: blur(14px);
+  -webkit-backdrop-filter: blur(14px);
+  border: 1px solid var(--lg-border);
+  transition:
+    background-color 0.15s ease,
+    border-color 0.15s ease,
+    transform 0.1s ease;
+}
+.glass-btn:hover {
+  background: rgba(var(--lg-tint), 0.11);
+  border-color: var(--lg-border-hi);
+}
+.glass-btn:active {
+  transform: scale(0.97);
+}
+.glass-btn-primary {
+  background: linear-gradient(
+    180deg,
+    rgba(var(--sp-primary-rgb), 0.95),
+    rgba(var(--sp-accent-rgb), 0.95)
+  );
+  border: 1px solid rgba(var(--sp-primary-rgb), 0.6);
+  box-shadow:
+    0 8px 24px rgba(var(--sp-primary-rgb), 0.35),
+    inset 0 1px 0 rgba(255, 255, 255, 0.35);
+  color: #fff;
+}
+.glass-btn-primary:hover {
+  filter: brightness(1.06);
+}
+
+.qc-dot {
+  box-shadow: 0 0 0 3px rgba(var(--lg-tint), 0.06);
+}
+
+@keyframes lg-shimmer {
+  0% {
+    background-position: -200% 0;
+  }
+  100% {
+    background-position: 200% 0;
+  }
+}
+.glass-shimmer {
+  background: linear-gradient(
+    100deg,
+    transparent 30%,
+    rgba(255, 255, 255, 0.25) 50%,
+    transparent 70%
+  );
+  background-size: 200% 100%;
+  animation: lg-shimmer 2.4s ease-in-out infinite;
+}
+
+@keyframes sig-pulse-ring {
+  0% {
+    box-shadow: 0 0 0 0 rgba(var(--sig-rgb), 0.45);
+  }
+  100% {
+    box-shadow: 0 0 0 10px rgba(var(--sig-rgb), 0);
+  }
+}
+.sig-pulse {
+  animation: sig-pulse-ring 1.6s ease-out infinite;
+}
+
+/* Camera feed skeleton — a darker, slower sibling of .glass-shimmer tuned
+   for large, near-black blocks (the video viewfinder) instead of small
+   glass chips. Same moving-band technique, just a dimmer band and a
+   longer sweep so it reads as "loading a camera" and not "loading a chat
+   bubble". Driven by real load state in CameraFeed, not a fixed timer —
+   see SKELETON_MIN_MS there. */
+@keyframes sp-skeleton-sweep {
+  0% {
+    background-position: -160% 0;
+  }
+  100% {
+    background-position: 160% 0;
+  }
+}
+.sp-skeleton-block {
+  background-color: var(--sp-surface);
+  background-image: linear-gradient(
+    100deg,
+    transparent 35%,
+    rgba(255, 255, 255, 0.08) 50%,
+    transparent 65%
+  );
+  background-size: 250% 100%;
+  animation: sp-skeleton-sweep 1.8s ease-in-out infinite;
+}
+
+/* ─────────────────────────────────────────────────────────────────────────
+   Top bar — same enterprise glass material as .glass-panel, tuned for a
+   full-width header: theme-aware (dark and light both use the --lg-*
+   tokens above), a soft downward shadow to lift it off the content below,
+   and a faint top specular line instead of a flat `border-b`, so it reads
+   as glass catching light rather than a plain divider.
+   ───────────────────────────────────────────────────────────────────────── */
+.sp-topbar-glass {
+  background: var(--lg-bg);
+  backdrop-filter: blur(24px) saturate(1.7);
+  -webkit-backdrop-filter: blur(24px) saturate(1.7);
+  border-bottom: 1px solid var(--lg-border);
+  box-shadow:
+    0 1px 0 var(--lg-border-hi),
+    0 12px 28px -18px rgba(0, 0, 0, 0.45);
+}
+
+/* ─────────────────────────────────────────────────────────────────────────
+   Bottom nav — a floating "liquid glass" capsule (Apple's current glass
+   material language, not a flat blurred rectangle): a translucent dock
+   that bends and catches light rather than a painted bar. CSS drives every
+   part that can live on the compositor thread at 60fps (the base material,
+   its specular highlights, the slow idle sheen, the tap ripple); framer-
+   motion in BottomNav.tsx owns everything layout-affecting (the morphing
+   blob, icon pop, label expand).
+   ───────────────────────────────────────────────────────────────────────── */
+.sp-nav-liquid {
+  /* Dark liquid-glass material, independent of light/dark theme tokens —
+     deep, high-opacity dark tint (closer to how YouTube/Instagram's mobile
+     bars read — clearly a material, not a faint tint) layered with a
+     heavy blur + saturate so anything visible behind it still refracts
+     through in color, not just blur. Edge-to-edge (full device width),
+     so there's no gap of page background showing around it — only a top
+     hairline + upward shadow separate it from the content above. */
+  background: linear-gradient(
+    165deg,
+    rgba(30, 32, 38, 0.68) 0%,
+    rgba(12, 13, 16, 0.82) 45%,
+    rgba(8, 9, 11, 0.9) 100%
+  );
+  backdrop-filter: blur(28px) saturate(2.4) brightness(1.08);
+  -webkit-backdrop-filter: blur(28px) saturate(2.4) brightness(1.08);
+  border-top: 1px solid rgba(255, 255, 255, 0.14);
+  box-shadow:
+    0 -14px 40px rgba(0, 0, 0, 0.35),
+    inset 0 1px 0 rgba(255, 255, 255, 0.22);
+  overflow: hidden;
+  /* No `position` here on purpose. This file's custom classes sit outside
+     Tailwind's cascade layers, so an unlayered `position: relative` here
+     would always beat the `fixed` utility BottomNav applies in its
+     className — unlayered rules win over layered ones regardless of
+     source order or specificity. */
+}
+/* Top-left diffuse light catch — the kind of soft highlight real curved
+   glass has, without ever forming a hard edge anywhere on the surface. */
+.sp-nav-liquid::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background: radial-gradient(
+    130% 90% at 20% -20%,
+    rgba(255, 255, 255, 0.16),
+    transparent 55%
+  );
+  pointer-events: none;
+}
+/* Idle sheen — a slow diagonal streak of light drifting across the
+   surface, the detail that makes the material read as "alive" glass
+   instead of a static blurred panel. Deliberately subtle (low opacity,
+   8s loop) so it registers ambiently, never as a distraction. */
+.sp-nav-liquid::after {
+  content: "";
+  position: absolute;
+  inset: -20% -60%;
+  background: linear-gradient(
+    75deg,
+    transparent 42%,
+    rgba(255, 255, 255, 0.09) 50%,
+    transparent 58%
+  );
+  animation: sp-liquid-sheen 8s ease-in-out infinite;
+  pointer-events: none;
+}
+@keyframes sp-liquid-sheen {
+  0%,
+  100% {
+    transform: translateX(-40%);
+  }
+  50% {
+    transform: translateX(40%);
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  .sp-nav-liquid::after {
+    animation: none;
+  }
+}
+
+/* Liquid blob — the morphing "droplet" of brand-colored glass that slides
+   under the active tab (layoutId-animated from BottomNav.tsx). A radial
+   gradient core plus an inset specular ring so it reads as a raised bead
+   of light rather than a flat colored pill. */
+.sp-nav-blob {
+  background:
+    radial-gradient(
+      120% 140% at 30% 15%,
+      rgba(255, 255, 255, 0.3),
+      transparent 45%
+    ),
+    linear-gradient(
+      155deg,
+      rgba(var(--sp-primary-rgb), 0.95) 0%,
+      rgba(var(--sp-accent-rgb), 0.95) 100%
+    );
+  box-shadow:
+    0 4px 16px rgba(var(--sp-primary-rgb), 0.45),
+    0 1px 2px rgba(0, 0, 0, 0.2),
+    inset 0 1px 0 rgba(255, 255, 255, 0.4),
+    inset 0 -1px 2px rgba(0, 0, 0, 0.15);
+}
+
+@keyframes sp-tap-ripple {
+  0% {
+    transform: scale(0.3);
+    opacity: 0.5;
+  }
+  100% {
+    transform: scale(2.2);
+    opacity: 0;
+  }
+}
+.sp-tap-ripple {
+  animation: sp-tap-ripple 0.5s cubic-bezier(0.22, 0.61, 0.36, 1) forwards;
+}
+
+/* ─────────────────────────────────────────────────────────────────────────
+   Sidebar skeleton — shares the sp-skeleton-block sweep so it reads as
+   the same "loading" language as the camera feed, sized to match
+   SidebarContent's real rows (header, New scan, nav items, recent list,
+   profile) so nothing jumps into place when the store finishes
+   rehydrating from localStorage.
+   ───────────────────────────────────────────────────────────────────────── */
+.sp-skeleton-row {
+  background-color: var(--sp-surface);
+  background-image: linear-gradient(
+    100deg,
+    transparent 35%,
+    rgba(255, 255, 255, 0.1) 50%,
+    transparent 65%
+  );
+  background-size: 250% 100%;
+  animation: sp-skeleton-sweep 1.8s ease-in-out infinite;
+}

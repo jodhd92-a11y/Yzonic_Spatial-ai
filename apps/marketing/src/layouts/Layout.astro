@@ -1,0 +1,50 @@
+---
+import '../styles/global.css'
+import { CustomCursor } from '../components/CustomCursor'
+import { SmoothScroll } from '../components/SmoothScroll'
+import { ProgressBar } from '../components/ProgressBar'
+import { SectionDots } from '../components/SectionDots'
+import { ThemeSwitcher } from '../components/ThemeSwitcher'
+import { FabStack } from '../components/FabStack'
+
+interface Props {
+  title?: string
+  description?: string
+}
+
+const {
+  title = 'Spatial AI Explorer — See the World Differently',
+  description = 'Spatial AI Explorer by Yzonic.corp. Point your camera, find anything. The future of augmented reality intelligence — private, on-device, real-time.',
+} = Astro.props
+---
+
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+    <meta name="generator" content={Astro.generator} />
+    <title>{title}</title>
+    <meta name="description" content={description} />
+  </head>
+  <body>
+    <!-- client:idle: neither the cursor ring nor smooth-scroll needs to
+         be interactive in the first paint frame — both can wait until
+         the browser has a spare moment, same rationale as Sidebar. -->
+    <CustomCursor client:idle />
+    <SmoothScroll client:idle />
+
+    <!-- Global chrome: scroll progress, section nav, theme picker, and
+         the auto-scroll/back-to-top FABs. None of these are needed for
+         first paint or LCP, so they hydrate on idle like the cursor
+         and smooth-scroll above. -->
+    <ProgressBar client:idle />
+    <SectionDots client:idle />
+    <ThemeSwitcher client:idle />
+    <FabStack client:idle />
+
+    <slot />
+  </body>
+</html>
+

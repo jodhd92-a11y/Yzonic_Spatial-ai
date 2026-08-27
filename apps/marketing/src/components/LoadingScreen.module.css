@@ -1,0 +1,307 @@
+.overlay {
+  position: fixed;
+  inset: 0;
+  z-index: 10000;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 40px;
+  background: radial-gradient(
+    ellipse 80% 60% at 50% 40%,
+    #0d1420 0%,
+    var(--bg-0) 70%
+  );
+  overflow: hidden;
+}
+
+/* ---------- Wordmark intro (text → logo) ---------- */
+.wordmarkStage {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 2;
+}
+.wordmark {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  justify-content: center;
+  gap: 0.02em;
+  font-size: clamp(32px, 7vw, 84px);
+  font-weight: 800;
+  letter-spacing: -0.02em;
+  color: transparent;
+  background: linear-gradient(
+    120deg,
+    #fff 0%,
+    var(--primary) 45%,
+    var(--accent) 100%
+  );
+  -webkit-background-clip: text;
+  background-clip: text;
+}
+.letter {
+  display: inline-block;
+  will-change: transform, opacity;
+}
+.wordSpace {
+  width: 0.32em;
+}
+.wordmarkUnderline {
+  position: absolute;
+  bottom: -14px;
+  left: 50%;
+  height: 2px;
+  width: 0;
+  background: linear-gradient(
+    90deg,
+    transparent,
+    var(--primary),
+    var(--accent),
+    transparent
+  );
+  transform: translateX(-50%);
+  animation: underlineGrow 1.1s var(--ease-expo) 0.35s forwards;
+}
+@keyframes underlineGrow {
+  to {
+    width: 78%;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .wordmarkUnderline {
+    animation: none !important;
+    width: 78%;
+  }
+}
+
+/* ---------- Background ----------
+   A single static gradient wash — no per-frame animation, no filters
+   that need repainting. Cheap regardless of device. */
+.gridBg {
+  position: absolute;
+  inset: 0;
+  z-index: 0;
+  background-image:
+    linear-gradient(rgba(var(--primary-rgb), 0.08) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(var(--primary-rgb), 0.08) 1px, transparent 1px);
+  background-size: 64px 64px;
+  mask-image: radial-gradient(
+    ellipse 70% 60% at 50% 45%,
+    black 0%,
+    transparent 75%
+  );
+  -webkit-mask-image: radial-gradient(
+    ellipse 70% 60% at 50% 45%,
+    black 0%,
+    transparent 75%
+  );
+}
+
+.logoStage {
+  position: relative;
+  width: 180px;
+  height: 180px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.ringOuter,
+.ringMid,
+.ringInner {
+  position: absolute;
+  border-radius: 50%;
+  border-style: solid;
+  will-change: transform;
+}
+.ringOuter {
+  inset: 0;
+  border-width: 1px;
+  border-color: rgba(var(--primary-rgb), 0.15);
+  border-top-color: rgba(var(--primary-rgb), 0.7);
+  animation: spin 3.5s linear infinite;
+}
+.ringMid {
+  inset: 22px;
+  border-width: 1px;
+  border-color: rgba(var(--accent-rgb), 0.12);
+  border-bottom-color: rgba(var(--accent-rgb), 0.65);
+  animation: spinReverse 2.6s linear infinite;
+}
+.ringInner {
+  inset: 44px;
+  border-width: 1px;
+  border-color: rgba(255, 255, 255, 0.06);
+  border-left-color: rgba(255, 255, 255, 0.5);
+  animation: spin 1.8s linear infinite;
+}
+@keyframes spin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+@keyframes spinReverse {
+  to {
+    transform: rotate(-360deg);
+  }
+}
+
+.progressRing {
+  position: absolute;
+  inset: 22px;
+  transform: rotate(-90deg);
+}
+.progressRingTrack {
+  fill: none;
+  stroke: rgba(255, 255, 255, 0.1);
+  stroke-width: 2.5;
+}
+.progressRingFill {
+  fill: none;
+  stroke: url(#preloader-gradient);
+  stroke-width: 2.5;
+  stroke-linecap: round;
+}
+
+.glow {
+  position: absolute;
+  inset: 20px;
+  border-radius: 50%;
+  background: radial-gradient(
+    circle,
+    rgba(var(--primary-rgb), 0.4),
+    transparent 70%
+  );
+  filter: blur(24px);
+  will-change: transform, opacity;
+  animation: glowPulse 2.2s ease-in-out infinite;
+}
+@keyframes glowPulse {
+  0%,
+  100% {
+    opacity: 0.5;
+    transform: scale(0.9);
+  }
+  50% {
+    opacity: 1;
+    transform: scale(1.15);
+  }
+}
+
+.orbitDot {
+  position: absolute;
+  width: 5px;
+  height: 5px;
+  border-radius: 50%;
+  background: var(--accent);
+  box-shadow: 0 0 10px var(--accent);
+  top: 50%;
+  left: 50%;
+  will-change: transform;
+  animation: orbit 4s linear infinite;
+}
+@keyframes orbit {
+  from {
+    transform: rotate(0deg) translateX(78px) rotate(0deg);
+  }
+  to {
+    transform: rotate(360deg) translateX(78px) rotate(-360deg);
+  }
+}
+
+.logoBadge {
+  width: 64px;
+  height: 64px;
+  border-radius: 18px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: linear-gradient(
+    150deg,
+    rgba(var(--primary-rgb), 0.4),
+    rgba(var(--accent-rgb), 0.28)
+  );
+  border: 1.5px solid rgba(var(--primary-rgb), 0.65);
+  box-shadow:
+    0 1px 0 rgba(255, 255, 255, 0.3) inset,
+    0 4px 20px rgba(0, 0, 0, 0.4),
+    0 0 30px rgba(var(--primary-rgb), 0.4);
+  position: relative;
+  z-index: 1;
+}
+.logoBadge svg {
+  width: 36px;
+  height: 36px;
+}
+.logoRing {
+  stroke: var(--primary);
+  vector-effect: non-scaling-stroke;
+}
+.logoStar {
+  fill: var(--primary);
+  transform-origin: 14px 14px;
+}
+.logoStarGlow {
+  fill: var(--primary);
+  opacity: 0.7;
+  animation: starGlowOpacity 2.2s ease-in-out infinite;
+  transform-origin: 14px 14px;
+}
+@keyframes starGlowOpacity {
+  0%,
+  100% {
+    opacity: 0.45;
+  }
+  50% {
+    opacity: 0.9;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .ringOuter,
+  .ringMid,
+  .ringInner,
+  .orbitDot,
+  .glow,
+  .logoStarGlow {
+    animation: none !important;
+  }
+}
+
+.textRow {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 16px;
+  position: relative;
+  z-index: 1;
+}
+.label {
+  font-family: var(--font-mono);
+  font-size: 11px;
+  letter-spacing: 0.32em;
+  text-transform: uppercase;
+  color: var(--text-faint);
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.bar {
+  width: 220px;
+  height: 2px;
+  border-radius: 2px;
+  background: rgba(255, 255, 255, 0.08);
+  overflow: hidden;
+  position: relative;
+}
+.barFill {
+  height: 100%;
+  background: linear-gradient(90deg, var(--primary), var(--accent));
+  border-radius: 2px;
+}

@@ -1,0 +1,226 @@
+.section {
+  background: var(--bg-1);
+  border-top: 1px solid var(--border);
+  padding: 120px 0 0;
+  position: relative;
+}
+
+.top {
+  max-width: 1200px;
+  margin: 0 auto 88px;
+  padding: 0 32px;
+  display: grid;
+  grid-template-columns: 1.2fr 1fr;
+  gap: 80px;
+}
+@media (max-width: 768px) {
+  .top {
+    grid-template-columns: 1fr;
+    gap: 48px;
+  }
+}
+
+.left h2 {
+  font-size: clamp(36px, 4.5vw, 60px);
+  font-weight: 800;
+  letter-spacing: -0.04em;
+  line-height: 1.05;
+  margin-bottom: 28px;
+}
+.left h2 :global(.accent) {
+  color: var(--primary);
+}
+.left p {
+  font-size: 16px;
+  font-weight: 300;
+  color: var(--text-dim);
+  line-height: 1.75;
+  margin-bottom: 18px;
+}
+
+.founderChip {
+  display: inline-flex;
+  align-items: center;
+  gap: 12px;
+  margin-top: 28px;
+  padding: 12px 20px;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 40px;
+  font-size: 14px;
+  font-weight: 500;
+  color: var(--text-dim);
+  transition: all 0.3s var(--ease-out);
+}
+.founderChip:hover {
+  background: var(--surface-hi);
+  border-color: rgba(var(--primary-rgb), 0.4);
+  transform: translateY(-2px);
+}
+.avatar {
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  background: linear-gradient(135deg, var(--primary), var(--accent));
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 12px;
+  font-weight: 800;
+  color: #05070d;
+  flex-shrink: 0;
+}
+
+.right {
+  display: flex;
+  flex-direction: column;
+  gap: 0;
+}
+.visionBlock {
+  padding: 32px 0;
+  border-bottom: 1px solid var(--border);
+}
+.visionBlock:first-child {
+  padding-top: 0;
+}
+.visionBlock:last-child {
+  border-bottom: none;
+}
+.visionBlock h4 {
+  font-size: 17px;
+  font-weight: 700;
+  margin-bottom: 10px;
+  letter-spacing: -0.01em;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+.visionBlock h4::before {
+  content: "";
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: var(--primary);
+  box-shadow: 0 0 8px var(--primary);
+}
+.visionBlock p {
+  font-size: 14px;
+  font-weight: 300;
+  color: var(--text-dim);
+  line-height: 1.7;
+}
+
+.footerGrid {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 64px 32px;
+  display: grid;
+  grid-template-columns: 2fr 1fr 1fr 1fr;
+  gap: 48px;
+  border-top: 1px solid var(--border);
+}
+@media (max-width: 1024px) {
+  .footerGrid {
+    grid-template-columns: 1fr 1fr;
+    gap: 36px;
+  }
+}
+@media (max-width: 768px) {
+  .footerGrid {
+    grid-template-columns: 1fr 1fr;
+    gap: 28px;
+    padding: 44px 24px;
+  }
+}
+
+.logo {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin-bottom: 18px;
+}
+.logo svg {
+  width: 32px;
+  height: 32px;
+  overflow: visible;
+}
+.logoRing {
+  stroke: var(--primary);
+  vector-effect: non-scaling-stroke;
+}
+.logoStar {
+  fill: var(--primary);
+}
+.logoStarGlow {
+  fill: var(--primary);
+  opacity: 0.6;
+  filter: blur(3px);
+}
+.logo span {
+  color: var(--white);
+  font-size: 17px;
+  font-weight: 700;
+  letter-spacing: -0.02em;
+}
+.brandDesc {
+  font-size: 13.5px;
+  color: var(--text-dim);
+  line-height: 1.7;
+  max-width: 280px;
+}
+
+.col h5 {
+  font-size: 12px;
+  font-weight: 700;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--text-faint);
+  margin-bottom: 18px;
+}
+.col ul {
+  list-style: none;
+}
+.col ul li {
+  margin-bottom: 12px;
+}
+.col ul li a {
+  font-size: 14px;
+  color: var(--text-dim);
+  transition:
+    color 0.25s,
+    padding-left 0.25s;
+  display: inline-block;
+}
+.col ul li a:hover {
+  color: var(--primary);
+  padding-left: 6px;
+}
+
+.bottom {
+  border-top: 1px solid var(--border);
+  padding: 28px 32px;
+  max-width: 1200px;
+  margin: 0 auto;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: 12px;
+}
+@media (max-width: 768px) {
+  .bottom {
+    padding: 24px;
+    flex-direction: column;
+    text-align: center;
+  }
+}
+.bottom p {
+  font-size: 12px;
+  color: var(--text-faint);
+}
+.bottom a {
+  color: var(--text-faint);
+}
+.bottom a:hover {
+  color: var(--primary);
+}

@@ -1,0 +1,377 @@
+.switcher {
+  position: fixed;
+  right: 24px;
+  top: 50%;
+  transform: translateY(-50%) translateZ(0);
+  will-change: transform;
+  z-index: 900;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  padding: 12px 8px;
+  background: rgba(8, 11, 20, 0.7);
+  backdrop-filter: blur(20px) saturate(1.5);
+  -webkit-backdrop-filter: blur(20px) saturate(1.5);
+  border: 1px solid var(--border);
+  border-radius: 100px;
+}
+@media (max-width: 1024px) {
+  .switcher {
+    right: 14px;
+    padding: 10px 8px;
+  }
+}
+
+.label {
+  font-family: var(--font-mono);
+  font-size: 8px;
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+  color: var(--text-faint);
+  writing-mode: vertical-rl;
+  text-orientation: mixed;
+  margin-bottom: 4px;
+  text-align: center;
+}
+
+.dots {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.dot {
+  width: 24px;
+  height: 24px;
+  border-radius: 50%;
+  border: 2px solid transparent;
+  transition: all 0.3s var(--ease-spring);
+  position: relative;
+  cursor: none;
+}
+@media (max-width: 1024px) {
+  .dot {
+    width: 22px;
+    height: 22px;
+  }
+}
+.dot::after {
+  content: "";
+  position: absolute;
+  inset: 3px;
+  border-radius: 50%;
+  background: var(--dot-color);
+  box-shadow: 0 0 10px var(--dot-color);
+}
+.dot:hover {
+  transform: scale(1.2);
+}
+.dot.active {
+  border-color: var(--text);
+  transform: scale(1.15);
+}
+
+.toggle {
+  display: none;
+}
+
+/* ── Theme ripple ── full-screen colour wash fired on real taps */
+.rippleHost {
+  position: fixed;
+  inset: 0;
+  z-index: 99997;
+  pointer-events: none;
+  overflow: hidden;
+}
+.rippleHost :global(.wave) {
+  position: absolute;
+  border-radius: 50%;
+  transform: translate(-50%, -50%) scale(0);
+  will-change: transform, opacity;
+  background:
+    radial-gradient(
+      circle,
+      rgba(255, 255, 255, 0.55) 0%,
+      rgba(255, 255, 255, 0.18) 38%,
+      transparent 62%
+    ),
+    radial-gradient(
+      circle,
+      var(--ripple-color, #4fc3f7) 0%,
+      var(--ripple-color, #4fc3f7) 48%,
+      transparent 100%
+    );
+  mix-blend-mode: screen;
+  opacity: 0;
+}
+.rippleHost :global(.wave.fire) {
+  animation: wave 1.15s var(--ease-expo) forwards;
+}
+@keyframes wave {
+  0% {
+    transform: translate(-50%, -50%) scale(0);
+    opacity: 0;
+  }
+  8% {
+    opacity: 0.95;
+  }
+  60% {
+    opacity: 0.85;
+  }
+  100% {
+    transform: translate(-50%, -50%) scale(1);
+    opacity: 0;
+  }
+}
+
+.rippleHost :global(.spark) {
+  position: absolute;
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: var(--ripple-color, #4fc3f7);
+  box-shadow: 0 0 10px var(--ripple-color, #4fc3f7);
+  transform: translate(-50%, -50%) scale(0);
+  will-change: transform, opacity;
+  opacity: 0;
+}
+.rippleHost :global(.spark.fire) {
+  animation: spark 0.85s var(--ease-out) forwards;
+}
+@keyframes spark {
+  0% {
+    transform: translate(-50%, -50%) scale(0);
+    opacity: 1;
+  }
+  100% {
+    transform: translate(
+        calc(-50% + var(--sx, 0px)),
+        calc(-50% + var(--sy, 0px))
+      )
+      scale(0.2);
+    opacity: 0;
+  }
+}
+
+.rippleHost :global(.halo) {
+  position: absolute;
+  width: 280px;
+  height: 280px;
+  border-radius: 50%;
+  transform: translate(-50%, -50%) scale(0.3);
+  background: radial-gradient(
+    circle,
+    var(--ripple-color, #4fc3f7),
+    transparent 70%
+  );
+  filter: blur(24px);
+  opacity: 0;
+  will-change: transform, opacity;
+}
+.rippleHost :global(.halo.fire) {
+  animation: halo 0.9s var(--ease-out) forwards;
+}
+@keyframes halo {
+  0% {
+    transform: translate(-50%, -50%) scale(0.3);
+    opacity: 0;
+  }
+  25% {
+    opacity: 0.9;
+  }
+  100% {
+    transform: translate(-50%, -50%) scale(2.4);
+    opacity: 0;
+  }
+}
+
+/* ── Mobile: collapsed colour orb, bottom-center, blooms into a
+   horizontal glass pill of swatches on tap. ── */
+@media (max-width: 768px) {
+  .switcher {
+    left: 50%;
+    right: auto;
+    bottom: 20px;
+    top: auto;
+    transform: translateX(-50%);
+    display: block;
+    padding: 0;
+    gap: 0;
+    background: none;
+    border: none;
+    backdrop-filter: none;
+    -webkit-backdrop-filter: none;
+    width: 56px;
+    height: 56px;
+  }
+  .toggle {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 56px;
+    height: 56px;
+    border-radius: 50%;
+    background: conic-gradient(
+      from 200deg,
+      #4fc3f7,
+      #7c4dff,
+      #ff6b9d,
+      #ffd93d,
+      #66bb6a,
+      #4fc3f7
+    );
+    border: 3px solid rgba(255, 255, 255, 0.85);
+    box-shadow:
+      0 10px 28px rgba(15, 17, 28, 0.32),
+      0 0 0 1px rgba(15, 17, 28, 0.06);
+    position: relative;
+    z-index: 3;
+    transition:
+      transform 0.35s var(--ease-spring),
+      box-shadow 0.3s;
+    animation: breathe 3.6s ease-in-out infinite;
+  }
+  .toggle:active {
+    transform: scale(0.92);
+  }
+  .switcher.open .toggle {
+    transform: rotate(135deg) scale(1.08);
+    animation: none;
+  }
+  .toggleSwatch {
+    width: 22px;
+    height: 22px;
+    border-radius: 50%;
+    background: var(--dot-color, var(--primary));
+    box-shadow:
+      0 0 10px rgba(0, 0, 0, 0.25),
+      inset 0 0 0 2px rgba(255, 255, 255, 0.5);
+    transition: transform 0.35s var(--ease-spring);
+  }
+  .switcher.open .toggleSwatch {
+    transform: scale(0.55);
+  }
+  @keyframes breathe {
+    0%,
+    100% {
+      box-shadow:
+        0 10px 28px rgba(15, 17, 28, 0.32),
+        0 0 0 1px rgba(15, 17, 28, 0.06);
+    }
+    50% {
+      box-shadow:
+        0 10px 34px rgba(15, 17, 28, 0.4),
+        0 0 0 8px rgba(255, 255, 255, 0.15);
+    }
+  }
+
+  .label {
+    display: none;
+  }
+
+  .dots {
+    position: absolute;
+    bottom: calc(100% + 16px);
+    left: 50%;
+    transform: translateX(-50%) translateY(18px) scale(0.82);
+    transform-origin: center bottom;
+    flex-direction: row;
+    gap: 9px;
+    align-items: center;
+    padding: 11px 15px;
+    background: rgba(8, 11, 20, 0.82);
+    backdrop-filter: blur(20px) saturate(1.5);
+    -webkit-backdrop-filter: blur(20px) saturate(1.5);
+    border: 1px solid var(--border-hi);
+    border-radius: 999px;
+    box-shadow:
+      0 1px 0 rgba(255, 255, 255, 0.16) inset,
+      0 18px 44px rgba(0, 0, 0, 0.45);
+    opacity: 0;
+    pointer-events: none;
+    z-index: 3;
+    transition:
+      opacity 0.32s var(--ease-out),
+      transform 0.45s var(--ease-spring);
+  }
+  .dots::after {
+    content: "";
+    position: absolute;
+    bottom: -7px;
+    left: 50%;
+    transform: translateX(-50%) rotate(45deg);
+    width: 13px;
+    height: 13px;
+    background: rgba(8, 11, 20, 0.82);
+    border-right: 1px solid var(--border-hi);
+    border-bottom: 1px solid var(--border-hi);
+  }
+  .switcher.open .dots {
+    opacity: 1;
+    transform: translateX(-50%) translateY(0) scale(1);
+    pointer-events: auto;
+  }
+
+  .dot {
+    position: relative;
+    left: auto;
+    bottom: auto;
+    width: 34px;
+    height: 34px;
+    border-width: 2px;
+    opacity: 0;
+    transform: scale(0.3);
+    pointer-events: none;
+    transition:
+      transform 0.4s var(--ease-spring),
+      opacity 0.25s var(--ease-out),
+      border-color 0.3s;
+    box-shadow: 0 4px 12px rgba(15, 17, 28, 0.3);
+  }
+  .switcher.open .dot {
+    opacity: 1;
+    pointer-events: auto;
+    transform: scale(1);
+  }
+  .switcher.open .dot:nth-child(1) {
+    transition-delay: 0.05s;
+  }
+  .switcher.open .dot:nth-child(2) {
+    transition-delay: 0.09s;
+  }
+  .switcher.open .dot:nth-child(3) {
+    transition-delay: 0.13s;
+  }
+  .switcher.open .dot:nth-child(4) {
+    transition-delay: 0.17s;
+  }
+  .switcher.open .dot:nth-child(5) {
+    transition-delay: 0.21s;
+  }
+  .switcher.open .dot:nth-child(6) {
+    transition-delay: 0.25s;
+  }
+  .switcher.open .dot:nth-child(7) {
+    transition-delay: 0.29s;
+  }
+  .switcher:not(.open) .dot {
+    transition-delay: 0s;
+  }
+
+  .switcher::before {
+    content: "";
+    position: fixed;
+    inset: 0;
+    background: rgba(10, 12, 20, 0.32);
+    backdrop-filter: blur(2px);
+    -webkit-backdrop-filter: blur(2px);
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity 0.3s;
+    z-index: 1;
+  }
+  .switcher.open::before {
+    opacity: 1;
+    pointer-events: auto;
+  }
+}

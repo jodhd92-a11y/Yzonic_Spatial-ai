@@ -1,0 +1,244 @@
+/* The outer container is tall — this height IS the scroll distance
+   the whole sequence plays across. The inner content stays pinned
+   (sticky) for that entire scroll, while we scrub through six
+   chapters based on scroll position alone. No JS scroll-jacking,
+   no scroll-locking — this is native browser scroll, just read and
+   mapped to visual state. */
+.outer {
+  position: relative;
+  height: 650vh;
+}
+
+.sticky {
+  position: sticky;
+  top: 0;
+  height: 100vh;
+  overflow: hidden;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: linear-gradient(
+    180deg,
+    var(--bg-0) 0%,
+    #0a0d16 50%,
+    var(--bg-0) 100%
+  );
+}
+
+.bgWash {
+  position: absolute;
+  inset: 0;
+  z-index: 0;
+  opacity: 0.5;
+}
+
+.eyebrowRow {
+  position: absolute;
+  top: 64px;
+  left: 0;
+  right: 0;
+  text-align: center;
+  z-index: 3;
+}
+
+.core {
+  position: relative;
+  width: 100%;
+  max-width: 1100px;
+  height: 100%;
+  display: grid;
+  grid-template-columns: 0.9fr 1.1fr;
+  align-items: center;
+  gap: 60px;
+  padding: 0 48px;
+  z-index: 2;
+}
+
+/* The central orb */
+.orbWrap {
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  height: 420px;
+}
+.orbRing {
+  position: absolute;
+  border-radius: 50%;
+  border: 1px solid;
+}
+.ring1 {
+  width: 340px;
+  height: 340px;
+  animation: orbSpin 18s linear infinite;
+}
+.ring2 {
+  width: 260px;
+  height: 260px;
+  animation: orbSpin 12s linear infinite reverse;
+}
+.ring3 {
+  width: 180px;
+  height: 180px;
+  animation: orbSpin 8s linear infinite;
+}
+@keyframes orbSpin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+.orbGlow {
+  position: absolute;
+  width: 260px;
+  height: 260px;
+  border-radius: 50%;
+  filter: blur(50px);
+  opacity: 0.55;
+}
+
+.orbCore {
+  position: relative;
+  width: 140px;
+  height: 140px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  box-shadow:
+    0 1px 0 rgba(255, 255, 255, 0.25) inset,
+    0 20px 60px rgba(0, 0, 0, 0.5);
+  z-index: 2;
+}
+.orbNum {
+  font-family: var(--font-mono);
+  font-size: 40px;
+  font-weight: 700;
+  color: #fff;
+}
+
+/* Text column */
+.textCol {
+  position: relative;
+  height: 260px;
+}
+.chapter {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+}
+.chapterLabel {
+  font-family: var(--font-mono);
+  font-size: 11px;
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+  margin-bottom: 18px;
+}
+.chapterTitle {
+  font-size: clamp(30px, 4vw, 46px);
+  font-weight: 800;
+  letter-spacing: -0.03em;
+  line-height: 1.05;
+  color: #fff;
+  margin-bottom: 20px;
+}
+.chapterDesc {
+  font-size: 16.5px;
+  font-weight: 300;
+  line-height: 1.7;
+  color: var(--text-dim);
+  max-width: 480px;
+}
+
+/* Side progress rail */
+.rail {
+  position: absolute;
+  right: 48px;
+  top: 50%;
+  transform: translateY(-50%);
+  display: flex;
+  flex-direction: column;
+  gap: 18px;
+  z-index: 3;
+}
+.railDot {
+  width: 34px;
+  height: 3px;
+  border-radius: 2px;
+  background: rgba(255, 255, 255, 0.15);
+  cursor: pointer;
+  transition:
+    background 0.3s,
+    width 0.3s;
+  position: relative;
+  overflow: hidden;
+}
+.railDot.active {
+  width: 46px;
+  background: rgba(255, 255, 255, 0.15);
+}
+.railFill {
+  position: absolute;
+  inset: 0;
+  border-radius: 2px;
+  transform-origin: left;
+}
+
+.progressText {
+  position: absolute;
+  bottom: 48px;
+  left: 0;
+  right: 0;
+  text-align: center;
+  font-family: var(--font-mono);
+  font-size: 11px;
+  letter-spacing: 0.15em;
+  color: var(--text-faint);
+  z-index: 3;
+}
+
+@media (max-width: 900px) {
+  .core {
+    grid-template-columns: 1fr;
+    gap: 24px;
+    text-align: center;
+    padding: 0 28px;
+  }
+  .orbWrap {
+    height: 220px;
+  }
+  .ring1 {
+    width: 200px;
+    height: 200px;
+  }
+  .ring2 {
+    width: 150px;
+    height: 150px;
+  }
+  .ring3 {
+    width: 100px;
+    height: 100px;
+  }
+  .orbCore {
+    width: 90px;
+    height: 90px;
+  }
+  .orbNum {
+    font-size: 26px;
+  }
+  .chapterDesc {
+    max-width: 100%;
+    margin: 0 auto;
+  }
+  .rail {
+    display: none;
+  }
+  .textCol {
+    height: 320px;
+  }
+}

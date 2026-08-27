@@ -1,0 +1,433 @@
+.section {
+  padding: 140px 0;
+  background: rgba(255, 255, 255, 0.012);
+  border-top: 1px solid var(--border);
+  border-bottom: 1px solid var(--border);
+  overflow: hidden;
+}
+
+/* ---------- Stage wrapper: small, centered, cinematic ---------- */
+
+.theaterWrap {
+  max-width: 720px;
+  margin: 56px auto 0;
+  padding: 0 32px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 22px;
+}
+
+.stage {
+  position: relative;
+  width: 100%;
+  aspect-ratio: 2.35 / 1;
+  border-radius: 20px;
+  overflow: hidden;
+  background: var(--bg-0);
+  border: 1px solid var(--border);
+  cursor: pointer;
+  padding: 0;
+  display: block;
+  text-align: left;
+  font: inherit;
+  color: inherit;
+  box-shadow:
+    0 30px 60px -20px rgba(0, 0, 0, 0.6),
+    0 0 0 1px rgba(255, 255, 255, 0.02) inset;
+  transition:
+    border-color 0.4s var(--ease-out),
+    box-shadow 0.4s var(--ease-out),
+    transform 0.4s var(--ease-out);
+}
+.stage:hover {
+  border-color: rgba(var(--primary-rgb), 0.4);
+  transform: translateY(-2px);
+  box-shadow:
+    0 36px 70px -18px rgba(0, 0, 0, 0.65),
+    0 0 44px -8px rgba(var(--primary-rgb), 0.28),
+    0 0 0 1px rgba(255, 255, 255, 0.03) inset;
+}
+.stage:focus-visible {
+  outline: 2px solid var(--primary);
+  outline-offset: 3px;
+}
+
+.letterbox {
+  position: absolute;
+  left: 0;
+  right: 0;
+  height: 8%;
+  background: #000;
+  z-index: 3;
+  pointer-events: none;
+}
+.letterbox[data-pos="top"] {
+  top: 0;
+}
+.letterbox[data-pos="bottom"] {
+  bottom: 0;
+}
+
+.frame {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-end;
+}
+
+.frameGradient {
+  position: absolute;
+  inset: 0;
+  background:
+    radial-gradient(
+      120% 140% at 50% 30%,
+      rgba(var(--primary-rgb), 0.16),
+      transparent 60%
+    ),
+    linear-gradient(150deg, var(--bg-2) 0%, var(--bg-0) 70%);
+}
+
+/* Faint film-grain texture, static (no animation cost) */
+.frameGrain {
+  position: absolute;
+  inset: 0;
+  opacity: 0.05;
+  mix-blend-mode: overlay;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='120' height='120'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='2' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+}
+
+.frameVignette {
+  position: absolute;
+  inset: 0;
+  background: radial-gradient(
+    120% 100% at 50% 50%,
+    transparent 45%,
+    rgba(0, 0, 0, 0.55) 100%
+  );
+}
+
+/* ---------- Play button ---------- */
+
+.playBtn {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  width: 66px;
+  height: 66px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: rgba(255, 255, 255, 0.06);
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+  border: 1px solid rgba(255, 255, 255, 0.18);
+  z-index: 2;
+  transition: all 0.45s var(--ease-spring);
+}
+.stage:hover .playBtn,
+.modalStage .playBtn:hover {
+  background: var(--primary);
+  transform: translate(-50%, -50%) scale(1.12);
+  box-shadow: 0 0 44px rgba(var(--primary-rgb), 0.55);
+  border-color: transparent;
+}
+.playBtn svg {
+  width: 20px;
+  height: 20px;
+  fill: var(--text);
+  margin-left: 3px;
+  transition: fill 0.4s;
+}
+.stage:hover .playBtn svg {
+  fill: #05070d;
+}
+
+.playRing {
+  position: absolute;
+  inset: -14px;
+  border-radius: 50%;
+  border: 1px solid rgba(var(--primary-rgb), 0.35);
+  animation: ringPulse 2.6s var(--ease-out) infinite;
+}
+@keyframes ringPulse {
+  0% {
+    transform: scale(0.86);
+    opacity: 0.9;
+  }
+  70% {
+    transform: scale(1.28);
+    opacity: 0;
+  }
+  100% {
+    transform: scale(1.28);
+    opacity: 0;
+  }
+}
+
+/* ---------- Meta strip on the frame ---------- */
+
+.frameMeta {
+  position: relative;
+  z-index: 2;
+  display: flex;
+  align-items: flex-end;
+  justify-content: space-between;
+  gap: 16px;
+  padding: 16px 22px 22px;
+}
+.frameTitle {
+  font-size: 15px;
+  font-weight: 700;
+  color: var(--text);
+  letter-spacing: -0.01em;
+}
+.frameSub {
+  font-size: 12px;
+  color: var(--text-dim);
+  margin-top: 3px;
+}
+.timecode {
+  font-family: var(--font-mono);
+  font-size: 11px;
+  letter-spacing: 0.04em;
+  color: var(--text-faint);
+  white-space: nowrap;
+  padding-bottom: 2px;
+}
+
+.expandHint {
+  position: absolute;
+  top: 14px;
+  right: 16px;
+  z-index: 2;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 7px 12px;
+  border-radius: 999px;
+  background: rgba(0, 0, 0, 0.4);
+  backdrop-filter: blur(8px);
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  color: var(--text-dim);
+  font-family: var(--font-mono);
+  font-size: 10px;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  opacity: 0;
+  transform: translateY(-4px);
+  transition:
+    opacity 0.35s var(--ease-out),
+    transform 0.35s var(--ease-out);
+}
+.expandHint svg {
+  width: 11px;
+  height: 11px;
+}
+.stage:hover .expandHint {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+/* ---------- Filmstrip selector ---------- */
+
+.filmstrip {
+  display: flex;
+  gap: 10px;
+  width: 100%;
+  overflow-x: auto;
+  scrollbar-width: none;
+  padding-bottom: 2px;
+}
+.filmstrip::-webkit-scrollbar {
+  display: none;
+}
+
+.chip {
+  position: relative;
+  flex: 1 1 0;
+  min-width: 148px;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 10px 12px;
+  border-radius: 12px;
+  border: 1px solid var(--border);
+  background: var(--surface);
+  cursor: pointer;
+  text-align: left;
+  transition: all 0.3s var(--ease-out);
+}
+.chip:hover {
+  border-color: var(--border-hi);
+  background: var(--surface-hi);
+}
+.chipActive {
+  border-color: rgba(var(--primary-rgb), 0.45);
+  background: rgba(var(--primary-rgb), 0.08);
+}
+
+.sprockets {
+  position: absolute;
+  top: 3px;
+  left: 12px;
+  right: 12px;
+  height: 2px;
+  background-image: radial-gradient(
+    circle,
+    rgba(255, 255, 255, 0.16) 1px,
+    transparent 1.4px
+  );
+  background-size: 7px 2px;
+  background-repeat: repeat-x;
+  opacity: 0.7;
+}
+
+.chipThumb {
+  flex: none;
+  width: 32px;
+  height: 32px;
+  border-radius: 8px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: linear-gradient(
+    135deg,
+    rgba(var(--primary-rgb), 0.16),
+    rgba(var(--accent-rgb), 0.16)
+  );
+  border: 1px solid var(--border);
+}
+.chipThumb svg {
+  width: 10px;
+  height: 10px;
+  fill: var(--text-dim);
+  margin-left: 1px;
+  transition: fill 0.3s;
+}
+.chipActive .chipThumb svg {
+  fill: var(--primary);
+}
+
+.chipMeta {
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+  gap: 2px;
+}
+.chipTitle {
+  font-size: 12.5px;
+  font-weight: 600;
+  color: var(--text);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+.chipDuration {
+  font-family: var(--font-mono);
+  font-size: 10.5px;
+  color: var(--text-faint);
+}
+
+.chipUnderline {
+  position: absolute;
+  left: 12px;
+  right: 12px;
+  bottom: 0;
+  height: 2px;
+  border-radius: 2px;
+  background: linear-gradient(90deg, var(--primary), var(--accent));
+}
+
+/* ---------- Theater-mode overlay ---------- */
+
+.overlay {
+  position: fixed;
+  inset: 0;
+  z-index: 200;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 6vh 5vw;
+  background: rgba(3, 4, 8, 0.86);
+  backdrop-filter: blur(18px);
+  -webkit-backdrop-filter: blur(18px);
+}
+
+.modalStage {
+  position: relative;
+  width: min(1100px, 100%);
+  aspect-ratio: 2.35 / 1;
+  border-radius: 20px;
+  overflow: hidden;
+  background: var(--bg-0);
+  border: 1px solid var(--border-hi);
+  box-shadow: 0 60px 120px -30px rgba(0, 0, 0, 0.75);
+}
+.modalStage .playBtn {
+  width: 88px;
+  height: 88px;
+}
+.modalStage .playBtn svg {
+  width: 26px;
+  height: 26px;
+}
+.modalStage .frameTitle {
+  font-size: 19px;
+}
+.modalStage .frameSub {
+  font-size: 13px;
+}
+.modalStage .frameMeta {
+  padding: 22px 30px 30px;
+}
+
+.closeBtn {
+  position: absolute;
+  top: 16px;
+  right: 16px;
+  z-index: 4;
+  width: 38px;
+  height: 38px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: rgba(255, 255, 255, 0.08);
+  backdrop-filter: blur(8px);
+  border: 1px solid rgba(255, 255, 255, 0.16);
+  color: var(--text);
+  transition: all 0.3s var(--ease-out);
+}
+.closeBtn:hover {
+  background: rgba(255, 255, 255, 0.16);
+  transform: rotate(90deg);
+}
+.closeBtn svg {
+  width: 16px;
+  height: 16px;
+}
+
+@media (max-width: 640px) {
+  .stage {
+    aspect-ratio: 16 / 10;
+  }
+  .chip {
+    min-width: 118px;
+  }
+  .chipTitle {
+    font-size: 11.5px;
+  }
+  .frameTitle {
+    font-size: 13px;
+  }
+  .frameSub {
+    font-size: 11px;
+  }
+  .modalStage {
+    aspect-ratio: 4 / 3;
+  }
+}

@@ -1,0 +1,359 @@
+---
+interface Props {
+  id: string
+  eyebrow?: string
+  title?: string
+  description?: string
+}
+
+const {
+  id,
+  eyebrow = 'More To Explore',
+  title = 'Demos, live zoom & future goals',
+  description = 'Product walkthrough videos, an interactive showcase, key stats, and where Spatial AI Explorer is headed next.',
+} = Astro.props
+---
+
+<div class="collapsible-reveal" id={id} data-collapsed="true">
+  <button
+    type="button"
+    class="collapsible-reveal__toggle"
+    data-collapsible-toggle
+    aria-expanded="false"
+    aria-controls={`${id}-content`}
+  >
+    <span class="collapsible-reveal__pulse" aria-hidden="true"></span>
+    <span class="collapsible-reveal__icon" aria-hidden="true">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+        <path d="M12 5v14M5 12h14" />
+      </svg>
+    </span>
+    <span class="collapsible-reveal__copy">
+      <span class="collapsible-reveal__eyebrow">{eyebrow}</span>
+      <span class="collapsible-reveal__title">{title}</span>
+      <span class="collapsible-reveal__desc">{description}</span>
+    </span>
+    <span class="collapsible-reveal__cta">
+      Show me
+      <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round">
+        <path d="M5 12h14M13 6l6 6-6 6" />
+      </svg>
+    </span>
+  </button>
+
+  <div class="collapsible-reveal__content" id={`${id}-content`} data-collapsible-content hidden>
+    <button
+      type="button"
+      class="collapsible-reveal__collapse"
+      data-collapsible-collapse
+      aria-label="Collapse this section"
+    >
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+        <path d="M18 15l-6-6-6 6" />
+      </svg>
+      Collapse
+    </button>
+    <slot />
+  </div>
+</div>
+
+<style>
+  .collapsible-reveal {
+    position: relative;
+    padding: 96px 32px;
+  }
+
+  /* ---------- Toggle (the highly-visible "expand" button) ---------- */
+  .collapsible-reveal__toggle {
+    position: relative;
+    display: flex;
+    align-items: center;
+    gap: 28px;
+    width: min(880px, 100%);
+    margin: 0 auto;
+    padding: 30px 34px;
+    border-radius: 28px;
+    background: rgba(20, 22, 30, 0.55);
+    backdrop-filter: blur(24px) saturate(1.8);
+    -webkit-backdrop-filter: blur(24px) saturate(1.8);
+    border: 1px solid rgba(255, 255, 255, 0.14);
+    box-shadow:
+      0 1px 0 rgba(255, 255, 255, 0.14) inset,
+      0 24px 60px rgba(0, 0, 0, 0.4);
+    cursor: pointer;
+    text-align: left;
+    color: var(--text);
+    font-family: var(--font-display);
+    overflow: hidden;
+    transition: transform 0.35s var(--ease-spring), box-shadow 0.4s var(--ease-out),
+      border-color 0.4s var(--ease-out), background 0.4s var(--ease-out);
+  }
+  .collapsible-reveal__toggle::before {
+    content: '';
+    position: absolute;
+    inset: -1px;
+    border-radius: inherit;
+    padding: 1px;
+    background: linear-gradient(
+      135deg,
+      rgba(var(--primary-rgb), 0.65),
+      rgba(var(--accent-rgb), 0.5),
+      rgba(var(--primary-rgb), 0.15)
+    );
+    -webkit-mask: linear-gradient(#000 0 0) content-box, linear-gradient(#000 0 0);
+    -webkit-mask-composite: xor;
+    mask-composite: exclude;
+    opacity: 0.65;
+    pointer-events: none;
+    transition: opacity 0.4s var(--ease-out);
+  }
+  .collapsible-reveal__toggle:hover,
+  .collapsible-reveal__toggle:focus-visible {
+    transform: translateY(-4px);
+    background: rgba(24, 27, 36, 0.7);
+    box-shadow:
+      0 1px 0 rgba(255, 255, 255, 0.18) inset,
+      0 30px 70px rgba(0, 0, 0, 0.5),
+      0 0 0 1px rgba(var(--primary-rgb), 0.14),
+      0 0 60px rgba(var(--primary-rgb), 0.25);
+  }
+  .collapsible-reveal__toggle:hover::before,
+  .collapsible-reveal__toggle:focus-visible::before {
+    opacity: 1;
+  }
+  .collapsible-reveal__toggle:active {
+    transform: translateY(-1px);
+  }
+
+  .collapsible-reveal__pulse {
+    position: absolute;
+    inset: 0;
+    border-radius: inherit;
+    box-shadow: 0 0 0 0 rgba(var(--primary-rgb), 0.35);
+    animation: collapsible-pulse 2.6s ease-out infinite;
+    pointer-events: none;
+  }
+  @keyframes collapsible-pulse {
+    0% {
+      box-shadow: 0 0 0 0 rgba(var(--primary-rgb), 0.28);
+    }
+    70% {
+      box-shadow: 0 0 0 18px rgba(var(--primary-rgb), 0);
+    }
+    100% {
+      box-shadow: 0 0 0 0 rgba(var(--primary-rgb), 0);
+    }
+  }
+
+  .collapsible-reveal__icon {
+    flex: none;
+    display: grid;
+    place-items: center;
+    width: 56px;
+    height: 56px;
+    border-radius: 16px;
+    background: linear-gradient(135deg, var(--primary), var(--accent));
+    color: var(--black);
+    transition: transform 0.4s var(--ease-spring);
+  }
+  .collapsible-reveal__icon svg {
+    width: 26px;
+    height: 26px;
+  }
+  .collapsible-reveal__toggle:hover .collapsible-reveal__icon {
+    transform: rotate(90deg);
+  }
+
+  .collapsible-reveal__copy {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+    flex: 1;
+    min-width: 0;
+  }
+  .collapsible-reveal__eyebrow {
+    font-size: 11.5px;
+    font-weight: 700;
+    letter-spacing: 0.18em;
+    text-transform: uppercase;
+    color: var(--primary);
+  }
+  .collapsible-reveal__title {
+    font-size: clamp(19px, 2.4vw, 25px);
+    font-weight: 800;
+    letter-spacing: -0.02em;
+    line-height: 1.15;
+  }
+  .collapsible-reveal__desc {
+    font-size: 14.5px;
+    font-weight: 300;
+    color: var(--text-dim);
+    line-height: 1.5;
+  }
+
+  .collapsible-reveal__cta {
+    flex: none;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 13px 22px;
+    border-radius: 999px;
+    background: linear-gradient(135deg, var(--primary), var(--accent));
+    color: var(--black);
+    font-size: 14px;
+    font-weight: 700;
+    white-space: nowrap;
+  }
+  .collapsible-reveal__cta svg {
+    transition: transform 0.3s var(--ease-out);
+  }
+  .collapsible-reveal__toggle:hover .collapsible-reveal__cta svg {
+    transform: translateX(4px);
+  }
+
+  /* ---------- Expanded content ---------- */
+  .collapsible-reveal__content {
+    position: relative;
+  }
+  .collapsible-reveal__content[hidden] {
+    display: none;
+  }
+
+  .collapsible-reveal__collapse {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    margin: 0 auto 8px;
+    padding: 10px 20px;
+    border-radius: 999px;
+    background: rgba(255, 255, 255, 0.05);
+    border: 1px solid var(--border);
+    color: var(--text-dim);
+    font-family: var(--font-display);
+    font-size: 13px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: background 0.3s var(--ease-out), color 0.3s var(--ease-out),
+      border-color 0.3s var(--ease-out);
+  }
+  .collapsible-reveal__collapse svg {
+    width: 15px;
+    height: 15px;
+  }
+  .collapsible-reveal__collapse:hover,
+  .collapsible-reveal__collapse:focus-visible {
+    background: rgba(255, 255, 255, 0.08);
+    border-color: var(--border-hi);
+    color: var(--text);
+  }
+
+  @media (max-width: 720px) {
+    .collapsible-reveal {
+      padding: 64px 20px;
+    }
+    .collapsible-reveal__toggle {
+      flex-wrap: wrap;
+      padding: 24px;
+      gap: 18px;
+    }
+    .collapsible-reveal__cta {
+      order: 3;
+      width: 100%;
+      justify-content: center;
+    }
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .collapsible-reveal__pulse {
+      animation: none;
+    }
+  }
+</style>
+
+<script>
+  function setupCollapsibleReveals() {
+    const groups = document.querySelectorAll('.collapsible-reveal')
+    if (!groups.length) return
+
+    const sectionIdToGroup = new Map()
+
+    groups.forEach((group) => {
+      const content = group.querySelector('[data-collapsible-content]')
+      const toggleBtn = group.querySelector('[data-collapsible-toggle]')
+      const collapseBtn = group.querySelector('[data-collapsible-collapse]')
+      if (!content || !toggleBtn) return
+
+      // Any anchor inside the collapsed content (e.g. #vision-section)
+      // needs to be able to find and expand this group before the page
+      // tries to scroll to it.
+      content.querySelectorAll('[id]').forEach((el) => sectionIdToGroup.set(el.id, group))
+
+      function expand() {
+        group.dataset.collapsed = 'false'
+        content.hidden = false
+        toggleBtn.setAttribute('aria-expanded', 'true')
+        toggleBtn.hidden = true
+      }
+
+      function collapse() {
+        group.dataset.collapsed = 'true'
+        content.hidden = true
+        toggleBtn.setAttribute('aria-expanded', 'false')
+        toggleBtn.hidden = false
+      }
+
+      toggleBtn.addEventListener('click', () => {
+        expand()
+        requestAnimationFrame(() => {
+          group.scrollIntoView({ behavior: 'smooth', block: 'start' })
+        })
+      })
+
+      collapseBtn?.addEventListener('click', () => {
+        collapse()
+        requestAnimationFrame(() => {
+          group.scrollIntoView({ behavior: 'smooth', block: 'start' })
+        })
+      })
+
+      group._expand = expand
+    })
+
+    // Intercept hash-link clicks in the capture phase, before
+    // SmoothScroll's own bubble-phase handler tries to scroll to a
+    // target that may still be hidden inside a collapsed group.
+    document.addEventListener(
+      'click',
+      (e) => {
+        const anchor = e.target instanceof Element ? e.target.closest('a[href^="#"]') : null
+        if (!anchor) return
+        const id = anchor.getAttribute('href')?.slice(1)
+        if (!id) return
+        const group = sectionIdToGroup.get(id)
+        if (group && group.dataset.collapsed === 'true') {
+          group._expand()
+        }
+      },
+      true
+    )
+
+    // Deep link directly to a section inside a collapsed group (e.g.
+    // loading the page with #vision-section already in the URL).
+    if (location.hash) {
+      const targetId = location.hash.slice(1)
+      const group = sectionIdToGroup.get(targetId)
+      if (group && group.dataset.collapsed === 'true') {
+        group._expand()
+        requestAnimationFrame(() => {
+          document.getElementById(targetId)?.scrollIntoView({ block: 'start' })
+        })
+      }
+    }
+  }
+
+  if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', setupCollapsibleReveals)
+  } else {
+    setupCollapsibleReveals()
+  }
+</script>

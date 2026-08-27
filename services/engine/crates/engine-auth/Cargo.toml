@@ -1,0 +1,23 @@
+[package]
+name = "engine-auth"
+version.workspace = true
+edition.workspace = true
+license.workspace = true
+publish.workspace = true
+
+[dependencies]
+serde.workspace = true
+jsonwebtoken.workspace = true
+thiserror.workspace = true
+chrono.workspace = true
+tracing.workspace = true
+
+# Pulled in now, used by the NEXT slice of engine-auth (login/signup/OTP
+# hashing per contracts/openapi.yaml) rather than by the week-1
+# /auth/me-only scope — declared here so the workspace lockfile is stable
+# once that lands.
+argon2.workspace = true
+sha2.workspace = true
+rand.workspace = true
+hex.workspace = true
+subtle.workspace = true

@@ -1,0 +1,438 @@
+openapi: 3.0.3
+info:
+  title: web-os auth contract
+  version: "1.0.0"
+  description: |
+    Source of truth for the auth surface, extracted from the live
+    `services/gateway` (NestJS) implementation. `engine-auth` (Rust) must
+    match every route, guard, throttle, cookie flag, and response shape
+    here exactly. Any intentional deviation must be made in this file
+    first, in its own PR, before the corresponding Rust handler changes.
+
+    Not modeled by OpenAPI but load-bearing — see section 3 of the
+    engine blueprint for the full text:
+      - Access token: JWT (HS256), payload `{ sub: userId, email }`,
+        accepted from either the `Authorization: Bearer` header or the
+        `access_token` cookie.
+      - Refresh token: opaque 256-bit random hex; stored server-side only
+        as a SHA-256 hash (`Session.refreshTokenHash`). Never a JWT.
+      - Refresh rotation: every successful refresh revokes the presented
+        token and issues a new pair. Presenting an already-revoked token
+        is a reuse/theft signal — revoke every session for that user and
+        emit an audit event `TOKEN_REUSE_DETECTED`.
+      - Login lockout: per-IP route throttle (see x-throttle below) AND a
+        separate per-account Redis counter — 5 failures within the window
+        locks the account for 15 minutes. "No such user" and "wrong
+        password" return the identical error message/shape (enumeration
+        protection).
+      - Password reset clears both the lockout key and the failure
+        counter for that account.
+      - OAuth account linking order: (provider, providerAccountId) exact
+        match first, then fall back to matching by email and linking the
+        provider to that existing account, only creating a new user if
+        neither matches. Provider access/refresh tokens are never stored.
+      - OTP: 6 digits via `crypto.randomInt`, stored as SHA-256 hash,
+        compared with constant-time equality, 10 min expiry, 5-attempt
+        cap, issuing a new code invalidates the previous one. Redis:
+        60s cooldown between sends, 5 sends/hour per destination.
+      - Client retry contract: frontend calls `GET /auth/me`; on 401 it
+        performs exactly one `POST /auth/refresh` then retries `me()`
+        once before treating the session as signed out. engine-auth must
+        preserve this shape or sessions will silently drop client-side.
+
+servers:
+  - url: http://localhost:4000
+    description: local gateway (NestJS, today) / engine-core (Rust, once cut over)
+
+security:
+  - cookieAuth: []
+  - bearerAuth: []
+
+paths:
+  /auth/signup:
+    post:
+      operationId: signup
+      x-throttle: "5/60s per-IP"
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema: { $ref: '#/components/schemas/SignupDto' }
+      responses:
+        '201':
+          description: Signup accepted, OTP sent to email. No session yet.
+          content:
+            application/json:
+              schema: { $ref: '#/components/schemas/MessageResponse' }
+        '400': { $ref: '#/components/responses/ValidationError' }
+        '409':
+          description: Email already registered.
+          content:
+            application/json:
+              schema: { $ref: '#/components/schemas/ErrorResponse' }
+
+  /auth/verify-otp:
+    post:
+      operationId: verifyOtp
+      x-throttle: "10/60s per-IP"
+      description: >
+        Only `purpose: SIGNUP_VERIFY` is accepted on this endpoint.
+        LOGIN_2FA / PASSWORD_RESET purposes return 401 here — password
+        reset verification happens inline inside /auth/reset-password.
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema: { $ref: '#/components/schemas/VerifyOtpDto' }
+      responses:
+        '200':
+          description: OTP verified. Sets access_token + refresh_token cookies.
+          headers:
+            Set-Cookie: { $ref: '#/components/headers/AuthCookies' }
+          content:
+            application/json:
+              schema:
+                type: object
+                required: [user]
+                properties:
+                  user: { $ref: '#/components/schemas/PublicUser' }
+        '401':
+          description: Wrong/expired code, attempt cap exceeded, or unsupported purpose.
+          content:
+            application/json:
+              schema: { $ref: '#/components/schemas/ErrorResponse' }
+
+  /auth/resend-otp:
+    post:
+      operationId: resendOtp
+      x-throttle: "3/60s per-IP"
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema: { $ref: '#/components/schemas/ResendOtpDto' }
+      responses:
+        '200':
+          description: >
+            Always a generic accepted-style message, even if the
+            destination has no pending OTP flow (enumeration protection).
+          content:
+            application/json:
+              schema: { $ref: '#/components/schemas/MessageResponse' }
+        '429':
+          description: Redis cooldown (60s) or hourly send cap (5/hr) hit.
+          content:
+            application/json:
+              schema: { $ref: '#/components/schemas/ErrorResponse' }
+
+  /auth/login:
+    post:
+      operationId: login
+      x-throttle: "10/60s per-IP; separately, 5 failures/account -> 15min account lockout"
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema: { $ref: '#/components/schemas/LoginDto' }
+      responses:
+        '200':
+          description: Sets access_token + refresh_token cookies.
+          headers:
+            Set-Cookie: { $ref: '#/components/headers/AuthCookies' }
+          content:
+            application/json:
+              schema:
+                type: object
+                required: [user]
+                properties:
+                  user: { $ref: '#/components/schemas/PublicUser' }
+        '401':
+          description: >
+            Identical body/message for "no such user" and "wrong
+            password" — never distinguish the two.
+          content:
+            application/json:
+              schema: { $ref: '#/components/schemas/ErrorResponse' }
+        '429':
+          description: Account locked (5 failed attempts within the window) — same status code the gateway's login-lockout path returns, not 423.
+          content:
+            application/json:
+              schema: { $ref: '#/components/schemas/ErrorResponse' }
+
+  /auth/refresh:
+    post:
+      operationId: refresh
+      description: >
+        Guard requires the `refresh_token` cookie to be present (path
+        `/auth` only — never sent to non-auth routes). Reads the raw
+        token from the cookie, not the body. Rotates BOTH cookies on
+        every call, even though only the refresh token materially
+        changes value — this keeps access-token TTL bookkeeping in one
+        place. Presenting an already-revoked refresh token triggers
+        reuse detection: every session for the user is revoked and a
+        TOKEN_REUSE_DETECTED audit event is written.
+      security:
+        - cookieAuth: []
+      responses:
+        '200':
+          description: New access_token + refresh_token cookies issued.
+          headers:
+            Set-Cookie: { $ref: '#/components/headers/AuthCookies' }
+          content:
+            application/json:
+              schema: { $ref: '#/components/schemas/OkResponse' }
+        '401':
+          description: Missing, expired, revoked, or reused refresh token.
+          content:
+            application/json:
+              schema: { $ref: '#/components/schemas/ErrorResponse' }
+
+  /auth/logout:
+    post:
+      operationId: logout
+      description: >
+        Revokes exactly the session tied to the presented refresh_token
+        cookie (if any) — not every session for the user. Always clears
+        both cookies regardless of whether a refresh token was present.
+      responses:
+        '200':
+          description: Cookies cleared.
+          headers:
+            Set-Cookie: { $ref: '#/components/headers/ClearedAuthCookies' }
+          content:
+            application/json:
+              schema: { $ref: '#/components/schemas/OkResponse' }
+
+  /auth/logout-all:
+    post:
+      operationId: logoutAll
+      description: >
+        Revokes every session for the current user. Exists server-side
+        today; no frontend currently calls it — do not drop it during
+        the port on the assumption it's dead code.
+      security:
+        - cookieAuth: []
+        - bearerAuth: []
+      responses:
+        '200':
+          description: All sessions revoked, cookies cleared.
+          headers:
+            Set-Cookie: { $ref: '#/components/headers/ClearedAuthCookies' }
+          content:
+            application/json:
+              schema: { $ref: '#/components/schemas/OkResponse' }
+        '401': { $ref: '#/components/responses/Unauthorized' }
+
+  /auth/forgot-password:
+    post:
+      operationId: forgotPassword
+      x-throttle: "3/60s per-IP"
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema: { $ref: '#/components/schemas/ForgotPasswordDto' }
+      responses:
+        '200':
+          description: Always generic (enumeration protection) — same body whether or not the email exists.
+          content:
+            application/json:
+              schema: { $ref: '#/components/schemas/MessageResponse' }
+
+  /auth/reset-password:
+    post:
+      operationId: resetPassword
+      x-throttle: "5/60s per-IP"
+      description: Verifies the OTP inline (PASSWORD_RESET purpose) and, on success, clears account lockout state (both the Redis failure counter and the lockout key).
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema: { $ref: '#/components/schemas/ResetPasswordDto' }
+      responses:
+        '200':
+          description: Password changed.
+          content:
+            application/json:
+              schema: { $ref: '#/components/schemas/MessageResponse' }
+        '401':
+          description: Wrong/expired code or attempt cap exceeded.
+          content:
+            application/json:
+              schema: { $ref: '#/components/schemas/ErrorResponse' }
+
+  /auth/me:
+    get:
+      operationId: me
+      description: >
+        Frontend calls this on every app load / focus. On 401 the client
+        contract is: exactly one POST /auth/refresh, then retry me() once
+        more, then treat as signed out. engine-auth must not change this
+        401-then-single-retry shape.
+      security:
+        - cookieAuth: []
+        - bearerAuth: []
+      responses:
+        '200':
+          description: Current user.
+          content:
+            application/json:
+              schema: { $ref: '#/components/schemas/PublicUser' }
+        '401': { $ref: '#/components/responses/Unauthorized' }
+
+  /auth/oauth/google:
+    get:
+      operationId: oauthGoogleStart
+      description: Browser redirect to Google's consent screen. Not a JSON endpoint.
+      responses:
+        '302': { description: Redirect to Google OAuth consent screen. }
+
+  /auth/oauth/google/callback:
+    get:
+      operationId: oauthGoogleCallback
+      description: >
+        On success: link/create user per the linking-order rule above,
+        set auth cookies, 302 to `${FRONTEND_URL}/`.
+        On failure: 302 to `${FRONTEND_URL}/login?error=oauth_failed`.
+        Never returns JSON — always a redirect either way.
+      responses:
+        '302':
+          description: Redirect to frontend (success) or /login?error=oauth_failed (failure).
+          headers:
+            Set-Cookie: { $ref: '#/components/headers/AuthCookies' }
+
+  /auth/oauth/github:
+    get:
+      operationId: oauthGithubStart
+      description: Browser redirect to GitHub's consent screen. Not a JSON endpoint.
+      responses:
+        '302': { description: Redirect to GitHub OAuth consent screen. }
+
+  /auth/oauth/github/callback:
+    get:
+      operationId: oauthGithubCallback
+      description: Same contract as the Google callback above, GitHub provider.
+      responses:
+        '302':
+          description: Redirect to frontend (success) or /login?error=oauth_failed (failure).
+          headers:
+            Set-Cookie: { $ref: '#/components/headers/AuthCookies' }
+
+components:
+  securitySchemes:
+    cookieAuth:
+      type: apiKey
+      in: cookie
+      name: access_token
+    bearerAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
+
+  headers:
+    AuthCookies:
+      description: |
+        Sets two cookies:
+          access_token  — path=/,     httpOnly, sameSite=lax, secure=(NODE_ENV=production), maxAge=JWT_ACCESS_EXPIRES_IN
+          refresh_token — path=/auth, httpOnly, sameSite=lax, secure=(NODE_ENV=production), maxAge=until Session.expiresAt
+        domain = COOKIE_DOMAIN env var if set, otherwise host-only.
+      schema: { type: string }
+    ClearedAuthCookies:
+      description: Clears access_token (path=/) and refresh_token (path=/auth) with matching domain.
+      schema: { type: string }
+
+  responses:
+    Unauthorized:
+      description: Missing/invalid/expired credentials.
+      content:
+        application/json:
+          schema: { $ref: '#/components/schemas/ErrorResponse' }
+    ValidationError:
+      description: DTO validation failed (class-validator) — unknown properties are stripped, not just rejected.
+      content:
+        application/json:
+          schema: { $ref: '#/components/schemas/ErrorResponse' }
+
+  schemas:
+    SignupDto:
+      type: object
+      required: [email, password]
+      properties:
+        email: { type: string, format: email }
+        password: { type: string, minLength: 8, maxLength: 128 }
+        name: { type: string, maxLength: 100 }
+
+    LoginDto:
+      type: object
+      required: [email, password]
+      properties:
+        email: { type: string, format: email }
+        password: { type: string }
+
+    VerifyOtpDto:
+      type: object
+      required: [email, code, purpose]
+      properties:
+        email: { type: string, format: email }
+        code: { type: string, minLength: 6, maxLength: 6 }
+        purpose:
+          type: string
+          enum: [SIGNUP_VERIFY, LOGIN_2FA, PASSWORD_RESET]
+          description: Only SIGNUP_VERIFY is currently accepted by POST /auth/verify-otp.
+
+    ResendOtpDto:
+      type: object
+      required: [email, purpose]
+      properties:
+        email: { type: string, format: email }
+        purpose:
+          type: string
+          enum: [SIGNUP_VERIFY, LOGIN_2FA, PASSWORD_RESET]
+
+    ForgotPasswordDto:
+      type: object
+      required: [email]
+      properties:
+        email: { type: string, format: email }
+
+    ResetPasswordDto:
+      type: object
+      required: [email, code, newPassword]
+      properties:
+        email: { type: string, format: email }
+        code: { type: string, minLength: 6, maxLength: 6 }
+        newPassword: { type: string, minLength: 8, maxLength: 128 }
+
+    PublicUser:
+      type: object
+      required: [id, email, emailVerified, createdAt]
+      properties:
+        id: { type: string }
+        email: { type: string, format: email }
+        name: { type: string, nullable: true }
+        avatarUrl: { type: string, nullable: true }
+        emailVerified: { type: boolean }
+        createdAt: { type: string, format: date-time }
+
+    MessageResponse:
+      type: object
+      required: [message]
+      properties:
+        message: { type: string }
+
+    OkResponse:
+      type: object
+      required: [ok]
+      properties:
+        ok: { type: boolean }
+
+    ErrorResponse:
+      type: object
+      required: [message]
+      properties:
+        message:
+          oneOf:
+            - type: string
+            - type: array
+              items: { type: string }
+        statusCode: { type: integer }

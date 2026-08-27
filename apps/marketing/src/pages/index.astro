@@ -1,0 +1,65 @@
+---
+import Layout from '../layouts/Layout.astro'
+import { NavWithLoader } from '../components/NavWithLoader'
+import { Sidebar } from '../components/Sidebar'
+import { Hero } from '../components/Hero'
+import { Marquee } from '../components/Marquee'
+import { Features } from '../components/Features'
+import { Showcase } from '../components/Showcase'
+import { Gallery } from '../components/Gallery'
+import { VideoSection } from '../components/VideoSection'
+import { ZoomSection } from '../components/ZoomSection'
+import { StatsSection } from '../components/StatsSection'
+import { Vision } from '../components/Vision'
+import { CtaSection } from '../components/CtaSection'
+import { AboutSection } from '../components/AboutSection'
+import CollapsibleReveal from '../components/CollapsibleReveal.astro'
+---
+
+<Layout>
+  <!-- client:load = hydrate immediately — this island IS the loading
+       experience, nothing to wait for. -->
+  <NavWithLoader client:load />
+
+  <!-- client:idle = hydrate once the browser has a free moment. The
+       menu isn't needed in the first instant of page load, but should
+       be ready well before a user would realistically click "Services". -->
+  <Sidebar client:idle />
+
+  <!-- client:load = above the fold and interactive immediately (cursor
+       parallax, magnetic buttons, scroll-linked fade). The headline
+       text itself is plain SSR'd markup either way (see Typewriter's
+       own comment) — LCP doesn't wait on hydration. -->
+  <Hero client:load />
+
+  <!-- client:visible = below the fold. The Next.js version bundled
+       Features/Showcase into the same client boundary as everything
+       else and leaned on `content-visibility: auto` purely for paint
+       cost; Astro's island model lets us go a step further and defer
+       hydration itself until each section actually scrolls into view. -->
+  <Marquee client:visible />
+  <Features client:visible />
+  <Showcase client:visible />
+
+  <!-- client:visible = the direct Astro-native equivalent of the
+     original's next/dynamic code-splitting for Gallery and Vision —
+     same intent (don't ship/run this JS until it's needed), expressed
+     as the framework's own primitive instead of a manual dynamic import. -->
+  <Gallery client:visible />
+
+  <!-- Video → Vision ("Future Goals") is collapsed by default behind a
+       highly-visible expand button, per product request. Wrapping it in
+       a plain Astro component (rather than a React one) means the four
+       islands inside stay independent and, as a bonus, don't hydrate at
+       all via client:visible until the group is actually expanded and
+       scrolled into view. -->
+  <CollapsibleReveal id="video-to-vision-reveal">
+    <VideoSection client:visible />
+    <ZoomSection client:visible />
+    <StatsSection client:visible />
+    <Vision client:visible />
+  </CollapsibleReveal>
+
+  <CtaSection client:visible />
+  <AboutSection client:visible />
+</Layout>

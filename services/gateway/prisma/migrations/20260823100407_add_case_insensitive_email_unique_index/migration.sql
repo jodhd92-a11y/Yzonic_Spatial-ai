@@ -1,0 +1,20 @@
+-- Enforce case-insensitive email uniqueness at the database layer.
+--
+-- Prisma's `email String @unique` only creates a case-SENSITIVE unique
+-- constraint, which allowed "user@example.com" and "User@Example.com"
+-- to exist as two separate rows — a real bug found via live OAuth
+-- testing (Google normalizes email to lowercase; a password-signup
+-- account created with different casing became invisible to OAuth
+-- linking, and could have silently become two disconnected accounts
+-- for the same real-world person).
+--
+-- This is deliberately a functional index, not a column-type change
+-- (e.g. citext), so it works with the existing `email String` column
+-- and both services (Prisma/NestJS and sqlx/Rust) without requiring
+-- either ORM to understand a non-standard Postgres type.
+--
+-- The application layer ALSO normalizes email to lowercase before any
+-- read/write (see auth.service.ts and engine-auth) — this index is the
+-- backstop that makes the invariant hold even if a future code path
+-- forgets to normalize, not a replacement for doing so.
+CREATE UNIQUE INDEX "users_email_lower_unique" ON "users" (LOWER("email"));

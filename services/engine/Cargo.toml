@@ -1,0 +1,50 @@
+[workspace]
+resolver = "2"
+members = [
+    "crates/engine-core",
+    "crates/engine-auth",
+    "crates/engine-data",
+    "crates/engine-realtime",
+    "crates/engine-security",
+    "crates/engine-vision",
+    # engine-vision-ffi is intentionally NOT a member yet — it's an empty
+    # placeholder crate. Per blueprint section 4/6, it only gets wired into
+    # the workspace once a concrete server-side inference need exists.
+    # Adding it now would compile a C++ FFI boundary nothing calls.
+]
+
+[workspace.package]
+edition = "2021"
+version = "0.1.0"
+license = "UNLICENSED"
+publish = false
+
+# Shared dependency versions across crates — bump in one place.
+[workspace.dependencies]
+tokio = { version = "1", features = ["full"] }
+axum = { version = "0.7", features = ["macros"] }
+tower = { version = "0.4", features = ["full"] }
+tower-http = { version = "0.5", features = ["trace", "cors", "timeout"] }
+serde = { version = "1", features = ["derive"] }
+serde_json = "1"
+tracing = "0.1"
+tracing-subscriber = { version = "0.3", features = ["env-filter", "json"] }
+anyhow = "1"
+thiserror = "1"
+sqlx = { version = "0.7", features = ["runtime-tokio-rustls", "postgres", "chrono", "uuid", "json"] }
+uuid = { version = "1", features = ["v4", "serde"] }
+chrono = { version = "0.4", features = ["serde"] }
+argon2 = "0.5"
+jsonwebtoken = "9"
+sha2 = "0.10"
+rand = "0.8"
+hex = "0.4"
+subtle = "2"
+redis = { version = "0.24", features = ["tokio-comp", "connection-manager"] }
+reqwest = { version = "0.12", default-features = false, features = ["json", "rustls-tls"] }
+urlencoding = "2"
+
+[profile.release]
+lto = true
+codegen-units = 1
+panic = "abort"

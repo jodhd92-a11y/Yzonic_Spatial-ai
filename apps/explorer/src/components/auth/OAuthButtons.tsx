@@ -1,0 +1,56 @@
+'use client'
+
+import { motion } from 'framer-motion'
+
+const API_URL = process.env.NEXT_PUBLIC_API_URL ?? 'http://localhost:4000'
+
+const PROVIDERS = [
+  {
+    id: 'google',
+    label: 'Continue with Google',
+    icon: (
+      <svg width="18" height="18" viewBox="0 0 18 18" fill="none">
+        <path d="M17.64 9.2c0-.64-.06-1.25-.16-1.84H9v3.48h4.84a4.14 4.14 0 0 1-1.8 2.72v2.26h2.9c1.7-1.57 2.7-3.88 2.7-6.62Z" fill="#4285F4"/>
+        <path d="M9 18c2.43 0 4.47-.8 5.96-2.18l-2.9-2.26c-.81.54-1.84.86-3.06.86-2.35 0-4.34-1.59-5.05-3.72H.95v2.33A9 9 0 0 0 9 18Z" fill="#34A853"/>
+        <path d="M3.95 10.7A5.4 5.4 0 0 1 3.66 9c0-.59.1-1.17.29-1.7V4.97H.95A9 9 0 0 0 0 9c0 1.45.35 2.83.95 4.03l3-2.33Z" fill="#FBBC05"/>
+        <path d="M9 3.58c1.32 0 2.51.46 3.44 1.35l2.58-2.58C13.46.89 11.43 0 9 0A9 9 0 0 0 .95 4.97l3 2.33C4.66 5.17 6.65 3.58 9 3.58Z" fill="#EA4335"/>
+      </svg>
+    ),
+  },
+  {
+    id: 'github',
+    label: 'Continue with GitHub',
+    icon: (
+      <svg width="18" height="18" viewBox="0 0 16 16" fill="currentColor">
+        <path d="M8 0C3.58 0 0 3.58 0 8c0 3.54 2.29 6.53 5.47 7.59.4.07.55-.17.55-.38 0-.19-.01-.82-.01-1.49-2.01.37-2.53-.49-2.69-.94-.09-.23-.48-.94-.82-1.13-.28-.15-.68-.52-.01-.53.63-.01 1.08.58 1.23.82.72 1.21 1.87.87 2.33.66.07-.52.28-.87.51-1.07-1.78-.2-3.64-.89-3.64-3.95 0-.87.31-1.59.82-2.15-.08-.2-.36-1.02.08-2.12 0 0 .67-.21 2.2.82.64-.18 1.32-.27 2-.27.68 0 1.36.09 2 .27 1.53-1.04 2.2-.82 2.2-.82.44 1.1.16 1.92.08 2.12.51.56.82 1.27.82 2.15 0 3.07-1.87 3.75-3.65 3.95.29.25.54.73.54 1.48 0 1.07-.01 1.93-.01 2.2 0 .21.15.46.55.38A8.01 8.01 0 0 0 16 8c0-4.42-3.58-8-8-8Z"/>
+      </svg>
+    ),
+  },
+] as const
+
+export function OAuthButtons() {
+  function handleClick(providerId: string) {
+    window.location.href = `${API_URL}/auth/oauth/${providerId}`
+  }
+
+  return (
+    <div className="flex flex-col gap-2.5">
+      {PROVIDERS.map((p, i) => (
+        <motion.button
+          key={p.id}
+          type="button"
+          onClick={() => handleClick(p.id)}
+          suppressHydrationWarning
+          initial={{ opacity: 0, y: 8 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.35, delay: i * 0.05, ease: [0.22, 0.61, 0.36, 1] }}
+          whileTap={{ scale: 0.985 }}
+          className="flex h-11 w-full items-center justify-center gap-2.5 rounded-xl border border-[var(--auth-glass-border)] bg-white/[0.03] text-[13.5px] font-medium text-[var(--auth-text)] transition-colors duration-150 hover:border-[var(--auth-glass-border-hi)] hover:bg-white/[0.07] active:bg-white/[0.09]"
+        >
+          {p.icon}
+          {p.label}
+        </motion.button>
+      ))}
+    </div>
+  )
+}
